@@ -35,8 +35,7 @@ public class SaftLoaderTest
      * Loads the simple SAF-T xml example and checks that the data
      * is the expected one
      */
-    public void testLoadSampleFile() throws SaftLoaderException
-    {
+    public void testLoadSampleFile() throws SaftLoaderException {
         final AuditFile auditFile = SaftLoader.loadFromFile("resources/tests/basicSaft.xml");
 
         final Header header = auditFile.getHeader();
@@ -46,6 +45,19 @@ public class SaftLoaderTest
         assertEquals("Pedro Santos", header.getCompanyName());
         assertEquals("F", header.getTaxAccountingBasis());
         assertEquals(2012, header.getFiscalYear());
+        assertEquals("Example Street", header.getCompanyAddress().getAddressDetail());
+        assertEquals("Lisbon", header.getCompanyAddress().getCity());
+        assertEquals("2855-097", header.getCompanyAddress().getPostalCode());
+        assertEquals("PT", header.getCompanyAddress().getCountry());
+        assertEquals("2012-01-01", header.getStartDate());
+        assertEquals("2012-12-31", header.getEndDate());
+        assertEquals("EUR", header.getCurrencyCode());
+        assertEquals("2017-01-14", header.getDateCreated());
+        assertEquals("Global", header.getTaxEntity());
+        assertEquals("508025338", header.getProductCompanyTaxId());
+        assertEquals("123", header.getSoftwareCertificateNumber());
+        assertEquals("ProductID", header.getProductId());
+        assertEquals("1.0", header.getProductVersion());
     }
 
     /**

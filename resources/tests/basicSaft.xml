@@ -7,8 +7,8 @@
     <TaxAccountingBasis>F</TaxAccountingBasis>
     <CompanyName>Pedro Santos</CompanyName>
     <CompanyAddress>
-      <AddressDetail>RUA RODRIGUES FARIA, 309, LX FACTORYPISO 4, SALA 10B</AddressDetail>
-      <City>LISBON - PORTUGAL</City>
+      <AddressDetail>Example Street</AddressDetail>
+      <City>Lisbon</City>
       <PostalCode>2855-097</PostalCode>
       <Country>PT</Country>
     </CompanyAddress>
@@ -19,8 +19,8 @@
     <DateCreated>2017-01-14</DateCreated>
     <TaxEntity>Global</TaxEntity>
     <ProductCompanyTaxID>508025338</ProductCompanyTaxID>
-    <SoftwareCertificateNumber/>
-    <ProductID/>
+    <SoftwareCertificateNumber>123</SoftwareCertificateNumber>
+    <ProductID>ProductID</ProductID>
     <ProductVersion>1.0</ProductVersion>
   </Header>
 </AuditFile>
