@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuditFile xmlns="urn:OECD:StandardAuditFile-Tax:PT_1.03_01" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Header>
+    <AuditFileVersion>1.03_01</AuditFileVersion>
+    <CompanyID>999999990</CompanyID>
+    <TaxRegistrationNumber>999999990</TaxRegistrationNumber>
+    <TaxAccountingBasis>F</TaxAccountingBasis>
+    <CompanyName>Pedro Santos</CompanyName>
+    <CompanyAddress>
+      <AddressDetail>RUA RODRIGUES FARIA, 309, LX FACTORYPISO 4, SALA 10B</AddressDetail>
+      <City>LISBON - PORTUGAL</City>
+      <PostalCode>2855-097</PostalCode>
+      <Country>PT</Country>
+    </CompanyAddress>
+    <FiscalYear>2012</FiscalYear>
+    <StartDate>2012-01-01</StartDate>
+    <EndDate>2012-12-31</EndDate>
+    <CurrencyCode>EUR</CurrencyCode>
+    <DateCreated>2017-01-14</DateCreated>
+    <TaxEntity>Global</TaxEntity>
+    <ProductCompanyTaxID>508025338</ProductCompanyTaxID>
+    <SoftwareCertificateNumber/>
+    <ProductID/>
+    <ProductVersion>1.0</ProductVersion>
+  </Header>
+</AuditFile>

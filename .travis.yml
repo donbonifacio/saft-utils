@@ -3,7 +3,7 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn -DsourceEncoding=utf8 clean cobertura:cobertura coveralls:report sonar:sonar
+  - mvn -Dcobertura.report.format=xml -DsourceEncoding=utf8 clean cobertura:cobertura sonar:sonar coveralls:report
 
 addons:
   sonarqube:
