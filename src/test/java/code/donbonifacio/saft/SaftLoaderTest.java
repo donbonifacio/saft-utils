@@ -3,9 +3,16 @@ package code.donbonifacio.saft;
 import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.elements.Header;
 import code.donbonifacio.saft.exceptions.SaftLoaderException;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import java.io.File;
+import java.io.IOException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Unit test for simple App.
@@ -32,13 +39,14 @@ public class SaftLoaderTest
     }
 
     /**
-     * Loads the simple SAF-T xml example and checks that the data
-     * is the expected one
+     * Given an AutitFile for the basicSaft.xml, tests it's content
+     * @param auditFile the AuditFile for basicSaft.xml
      */
-    public void testLoadSampleFile() throws SaftLoaderException {
-        final AuditFile auditFile = SaftLoader.loadFromFile("resources/tests/basicSaft.xml");
+    private void assertBasicSaft(final AuditFile auditFile) {
+        checkNotNull(auditFile);
 
         final Header header = auditFile.getHeader();
+        checkNotNull(header);
         assertEquals("1.03_01", header.getAuditFileVersion());
         assertEquals("999999990", header.getCompanyID());
         assertEquals("999999990", header.getTaxRegistrationNumber());
@@ -58,6 +66,27 @@ public class SaftLoaderTest
         assertEquals("123", header.getSoftwareCertificateNumber());
         assertEquals("ProductID", header.getProductId());
         assertEquals("1.0", header.getProductVersion());
+    }
+
+    /**
+     * Loads the simple SAF-T xml example and checks that the data
+     * is the expected one
+     * @throws SaftLoaderException
+     */
+    public void testLoadSampleFile() throws SaftLoaderException {
+        final AuditFile auditFile = SaftLoader.loadFromFile("resources/tests/basicSaft.xml");
+        assertBasicSaft(auditFile);
+    }
+
+    /**
+     * Tests the loading of basicSaft.xml via raw string
+     * @throws SaftLoaderException
+     * @throws IOException
+     */
+    public void testLoadSampleFileString() throws SaftLoaderException, IOException {
+        final String raw = Files.toString(new File("resources/tests/basicSaft.xml"), Charsets.UTF_8);
+        final AuditFile auditFile = SaftLoader.loadFromString(raw);
+        assertBasicSaft(auditFile);
     }
 
     /**
@@ -83,4 +112,14 @@ public class SaftLoaderTest
         }
     }
 
+    /**
+     * Tests trying to load invalid data as String
+     */
+    public void testLoadInvalidString() throws SaftLoaderException {
+        try {
+            SaftLoader.loadFromString("waza");
+            fail();
+        } catch(SaftLoaderException ex) {
+        }
+    }
 }
