@@ -5,8 +5,8 @@ import code.donbonifacio.saft.exceptions.SaftLoaderException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.io.StringReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -30,11 +30,13 @@ public final class SaftLoader {
      */
     public static AuditFile loadFromFile(String fileName) throws SaftLoaderException {
         checkNotNull(fileName);
+
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(AuditFile.class);
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            return (AuditFile) jaxbUnmarshaller.unmarshal(new File(fileName));
-        } catch(Exception ex) {
+            FileInputStream fis = new FileInputStream(fileName);
+            AuditFile auditFile = loadFrom(fis);
+            fis.close();
+            return auditFile;
+        } catch(IOException ex) {
             throw new SaftLoaderException(ex);
         }
     }
@@ -47,13 +49,25 @@ public final class SaftLoader {
      */
     public static AuditFile loadFromString(String raw) throws SaftLoaderException {
         checkNotNull(raw);
+        InputStream stream = new ByteArrayInputStream(raw.getBytes(StandardCharsets.UTF_8));
+        return loadFrom(stream);
+    }
+
+    /**
+     * Loads an AuditFile from an arbitrary stream
+     * @param stream the source stream
+     * @return the AuditFile
+     * @throws SaftLoaderException
+     */
+    public static AuditFile loadFrom(InputStream stream) throws SaftLoaderException {
+        checkNotNull(stream);
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(AuditFile.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            StringReader reader = new StringReader(raw);
-            return (AuditFile) jaxbUnmarshaller.unmarshal(reader);
+            return (AuditFile) jaxbUnmarshaller.unmarshal(stream);
         } catch(Exception ex) {
             throw new SaftLoaderException(ex);
         }
+
     }
 }
