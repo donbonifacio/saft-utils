@@ -21,8 +21,23 @@ public final class SaftDiff {
     private final AuditFile file2;
 
     private static final Map<String, Function<Header, Object>> headerMethods =
-            ImmutableMap.of("Header.AuditFileVersion", Header::getAuditFileVersion);
-                            //"Header.CompanyID", Header::getCompanyID);
+            ImmutableMap.<String, Function<Header, Object>>builder()
+                    .put("Header.AuditFileVersion", Header::getAuditFileVersion)
+                    .put("Header.CompanyID", Header::getCompanyID)
+                    .put("Header.TaxRegistrationNumber", Header::getTaxRegistrationNumber)
+                    .put("Header.TaxAccountingBasis", Header::getTaxAccountingBasis)
+                    .put("Header.CompanyName", Header::getCompanyName)
+                    .put("Header.FiscalYear", Header::getFiscalYear)
+                    .put("Header.StartDate", Header::getStartDate)
+                    .put("Header.EndDate", Header::getEndDate)
+                    .put("Header.DateCreated", Header::getDateCreated)
+                    .put("Header.CurrencyCode", Header::getCurrencyCode)
+                    .put("Header.TaxEntity", Header::getTaxEntity)
+                    .put("Header.ProductCompanyTaxID", Header::getProductCompanyTaxId)
+                    .put("Header.SoftwareCertificateNumber", Header::getSoftwareCertificateNumber)
+                    .put("Header.ProductID", Header::getProductId)
+                    .put("Header.ProductVersion", Header::getProductVersion)
+                    .build();
 
     /**
      * Creates a new differ for two AuditFiles
@@ -54,8 +69,20 @@ public final class SaftDiff {
      * @return the result of the operation
      */
     private <T> Result checkField(T t1, T t2, String methodName, Function<T, Object> method) {
-        final Object v1 = method.apply(t1);
-        final Object v2 = method.apply(t2);
+        Object v1 = method.apply(t1);
+        Object v2 = method.apply(t2);
+
+        if(v1 == v2) {
+            return Result.success();
+        }
+
+        if(v1 == null) {
+            v1 = "";
+        }
+
+        if(v2 == null) {
+            v2 = "";
+        }
 
         if(!v1.equals(v2)) {
             return Result.failure(methodName + " mismatch ['" + v1 + "' != '" + v2 +"']");

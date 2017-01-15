@@ -84,6 +84,35 @@ public class SaftDiffTest {
     }
 
     /**
+     * Creates a test that verifies that if we have different values on
+     * the given field, we have a proper error.
+     * @param headerField the field to consider
+     * @return the DynamicTest
+     */
+    private DynamicTest createFieldMismatchTest(String headerField) {
+        String testName = "Test header field " + headerField;
+        try {
+            final AuditFile f1 = SaftLoader.loadFromString(singleHeaderElement(headerField, "1"));
+            final AuditFile f2 = SaftLoader.loadFromString(singleHeaderElement(headerField, "2"));
+
+            Executable exec = () -> {
+                Result result = assertDiffFailure(f1, f2);
+                assertTrue("Result should fail", result.isFailed());
+                assertEquals(
+                   "Header." + headerField + " mismatch ['1' != '2']",
+                    result.getReason()
+                );
+            };
+
+            return DynamicTest.dynamicTest(testName, exec);
+        } catch(SaftLoaderException ex) {
+            return DynamicTest.dynamicTest(testName, () -> {
+                fail(ex.getMessage());
+            });
+        }
+    }
+
+    /**
      * Given a list of header fields, generates tests that create specific
      * AuditFiles for each field and check that if they are different
      * we have an error
@@ -92,30 +121,26 @@ public class SaftDiffTest {
     @TestFactory
     public List<DynamicTest> verifyMismatchHeaderTests() {
         final List<String> headerFields =
-                ImmutableList.of("AuditFileVersion");
+                ImmutableList.of(
+                        "AuditFileVersion",
+                        "CompanyID",
+                        "TaxRegistrationNumber",
+                        "TaxAccountingBasis",
+                        "CompanyName",
+                        "FiscalYear",
+                        "StartDate",
+                        "EndDate",
+                        "DateCreated",
+                        "CurrencyCode",
+                        "TaxEntity",
+                        "ProductCompanyTaxID",
+                        "SoftwareCertificateNumber",
+                        "ProductID",
+                        "ProductVersion"
+                );
 
         final List<DynamicTest> tests = headerFields.stream()
-                .map(headerField -> {
-                    String testName = "Test header field " + headerField;
-                    try {
-                        final AuditFile f1 = SaftLoader.loadFromString(singleHeaderElement(headerField, "1"));
-                        final AuditFile f2 = SaftLoader.loadFromString(singleHeaderElement(headerField, "2"));
-
-                        Executable exec = () -> {
-                            Result result = assertDiffFailure(f1, f2);
-                            assertEquals(
-                               "Header." + headerField + " mismatch ['1' != '2']",
-                                result.getReason()
-                            );
-                        };
-
-                        return DynamicTest.dynamicTest(testName, exec);
-                    } catch(SaftLoaderException ex) {
-                        return DynamicTest.dynamicTest(testName, () -> {
-                            fail(ex.getMessage());
-                        });
-                    }
-                })
+                .map(headerField -> createFieldMismatchTest(headerField))
                 .collect(Collectors.toList());
 
         return tests;

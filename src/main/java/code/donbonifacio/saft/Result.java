@@ -3,6 +3,7 @@ package code.donbonifacio.saft;
 import code.donbonifacio.saft.exceptions.SaftLoaderException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents an arbitrary result from operations.
@@ -13,6 +14,7 @@ public final class Result {
     private final boolean succeeded;
     private final String reason;
     private final Exception exception;
+    private final List<Result> results;
     private static final Result SUCCESS = new Result(true, "OK");
 
     /**
@@ -58,19 +60,22 @@ public final class Result {
      * @return a result that wraps the results
      */
     public static Result fromResults(List<Result> results) {
-        if(results.size() == 1) {
+        if (results.size() == 1) {
             return results.get(0);
         }
 
-        boolean success = results.stream()
-                .map(Result::isSucceeded)
-                .reduce(true, (a, s) -> a && s);
+        List<Result> failures = results.stream()
+                .filter(result -> result.isFailed())
+                .collect(Collectors.toList());
 
-        return new Result(success, "From list of results");
+        if (failures.size() == 1) {
+            return failures.get(0);
+        }
+
+        return new Result(failures.size() == 0, "From list of results", failures);
     }
-
     /**
-     * Creates a new result
+     * Creates a new resul
      * @param succeeded True if the result succeeded
      * @param reason a label string for the reason
      */
@@ -78,6 +83,7 @@ public final class Result {
         this.succeeded = succeeded;
         this.reason = reason;
         this.exception = null;
+        this.results = null;
     }
 
     /**
@@ -90,6 +96,20 @@ public final class Result {
         this.succeeded = succeeded;
         this.reason = reason;
         this.exception = exception;
+        this.results = null;
+    }
+
+    /**
+     * Creates a Result
+     * @param succeeded true of false
+     * @param reason a label string for the reason
+     * @param results an original source of results
+     */
+    private Result(boolean succeeded, String reason, List<Result> results) {
+        this.succeeded = succeeded;
+        this.reason = reason;
+        this.exception = null;
+        this.results = results;
     }
 
     /**
@@ -122,7 +142,23 @@ public final class Result {
      */
     @Override
     public String toString() {
-        return "Result[succeeded=" + isSucceeded() + ", reason='" + getReason() +"']";
+        StringBuilder builder = new StringBuilder();
+        builder.append("Result{");
+        builder.append("succeeded=");
+        builder.append(isSucceeded());
+        builder.append(", reason='");
+        builder.append(getReason());
+        builder.append("'");
+        if(results != null) {
+            builder.append(", results=[");
+            for(Result result : results) {
+                builder.append(result.toString());
+                builder.append(", ");
+            }
+            builder.append("]");
+        }
+        builder.append("}");
+        return builder.toString();
     }
 
 }
