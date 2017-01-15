@@ -15,7 +15,7 @@ import java.io.IOException;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Unit test for simple App.
+ * Unit tests for the SaftLoader
  */
 public class SaftLoaderTest
         extends TestCase
