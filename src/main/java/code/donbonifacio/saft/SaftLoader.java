@@ -2,6 +2,8 @@ package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.exceptions.SaftLoaderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -14,6 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Loads and AuditFile from specific sources
  */
 public final class SaftLoader {
+    static final Logger logger = LoggerFactory.getLogger(SaftLoader.class);
 
     /**
      * Prevent creating objects of this class
@@ -30,6 +33,7 @@ public final class SaftLoader {
      */
     public static AuditFile loadFromFile(String fileName) throws SaftLoaderException {
         checkNotNull(fileName);
+        logger.debug("Loading AuditFile from {}", fileName);
 
         try {
             FileInputStream fis = new FileInputStream(fileName);
@@ -49,6 +53,7 @@ public final class SaftLoader {
      */
     public static AuditFile loadFromString(String raw) throws SaftLoaderException {
         checkNotNull(raw);
+        logger.debug("Loading AuditFile from raw String");
         InputStream stream = new ByteArrayInputStream(raw.getBytes(StandardCharsets.UTF_8));
         return loadFrom(stream);
     }
