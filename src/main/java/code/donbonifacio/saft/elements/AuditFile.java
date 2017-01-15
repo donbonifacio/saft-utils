@@ -14,6 +14,9 @@ public final class AuditFile {
     @XmlElement(name="Header")
     private Header header;
 
+    @XmlElement(name="MasterFiles")
+    private MasterFiles masterFiles;
+
     /**
      * Gets the Header information
      * @return Header
@@ -23,5 +26,9 @@ public final class AuditFile {
             return new Header();
         }
         return header;
+    }
+
+    public MasterFiles getMasterFiles() {
+        return masterFiles;
     }
 }

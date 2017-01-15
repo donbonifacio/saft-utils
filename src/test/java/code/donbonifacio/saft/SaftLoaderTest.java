@@ -2,6 +2,8 @@ package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.elements.Header;
+import code.donbonifacio.saft.elements.MasterFiles;
+import code.donbonifacio.saft.elements.Product;
 import code.donbonifacio.saft.exceptions.SaftLoaderException;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -66,6 +68,14 @@ public class SaftLoaderTest
         assertEquals("123", header.getSoftwareCertificateNumber());
         assertEquals("ProductID", header.getProductId());
         assertEquals("1.0", header.getProductVersion());
+
+        final MasterFiles masterFiles = auditFile.getMasterFiles();
+
+        final Product product = masterFiles.getProducts().get(0);
+        assertEquals("S", product.getProductType());
+        assertEquals("Product Code", product.getProductCode());
+        assertEquals("Product Description", product.getProductDescription());
+        assertEquals("Product Number Code", product.getProductNumberCode());
     }
 
     /**

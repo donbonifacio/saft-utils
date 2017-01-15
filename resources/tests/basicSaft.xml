@@ -23,4 +23,45 @@
     <ProductID>ProductID</ProductID>
     <ProductVersion>1.0</ProductVersion>
   </Header>
+  <MasterFiles>
+    <Customer>
+      <CustomerID>206417</CustomerID>
+      <AccountID>Desconhecido</AccountID>
+      <CustomerTaxID>123123123</CustomerTaxID>
+      <CompanyName>Claudinha</CompanyName>
+      <BillingAddress>
+        <AddressDetail>Desconhecido</AddressDetail>
+        <City>Desconhecido</City>
+        <PostalCode>0000-000</PostalCode>
+        <Country>PT</Country>
+      </BillingAddress>
+      <Telephone>Desconhecido</Telephone>
+      <Fax>Desconhecido</Fax>
+      <Email>Desconhecido</Email>
+      <Website>Desconhecido</Website>
+      <SelfBillingIndicator>0</SelfBillingIndicator>
+    </Customer>
+    <Product>
+      <ProductType>S</ProductType>
+      <ProductCode>Product Code</ProductCode>
+      <ProductDescription>Product Description</ProductDescription>
+      <ProductNumberCode>Product Number Code</ProductNumberCode>
+    </Product>
+    <TaxTable>
+      <TaxTableEntry>
+        <TaxType>IVA</TaxType>
+        <TaxCountryRegion>PT</TaxCountryRegion>
+        <TaxCode>NOR</TaxCode>
+        <Description>IVA23</Description>
+        <TaxPercentage>23.00</TaxPercentage>
+      </TaxTableEntry>
+      <TaxTableEntry>
+        <TaxType>IVA</TaxType>
+        <TaxCountryRegion>PT</TaxCountryRegion>
+        <TaxCode>ISE</TaxCode>
+        <Description>Isento</Description>
+        <TaxPercentage>0.00</TaxPercentage>
+      </TaxTableEntry>
+    </TaxTable>
+  </MasterFiles>
 </AuditFile>
