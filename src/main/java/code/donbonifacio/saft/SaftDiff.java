@@ -1,26 +1,27 @@
 package code.donbonifacio.saft;
 
+import code.donbonifacio.saft.elements.Address;
 import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.elements.Header;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
+import static code.donbonifacio.saft.Util.compose;
 
 /**
- * Calculates the difference between two SAF-T files
+ * Calculates the differences between two SAF-T files
  */
 public final class SaftDiff {
 
     private final AuditFile file1;
     private final AuditFile file2;
 
-    private static final Map<String, Function<Header, Object>> headerMethods =
+    // maps a friendly name to a Header field getter
+    static final Map<String, Function<Header, Object>> HEADER_METHODS =
             ImmutableMap.<String, Function<Header, Object>>builder()
                     .put("Header.AuditFileVersion", Header::getAuditFileVersion)
                     .put("Header.CompanyID", Header::getCompanyID)
@@ -37,12 +38,16 @@ public final class SaftDiff {
                     .put("Header.SoftwareCertificateNumber", Header::getSoftwareCertificateNumber)
                     .put("Header.ProductID", Header::getProductId)
                     .put("Header.ProductVersion", Header::getProductVersion)
+                    .put("Header.CompanyAddress.AddressDetail", compose(Header::getCompanyAddress, Address::getAddressDetail))
+                    .put("Header.CompanyAddress.City", compose(Header::getCompanyAddress, Address::getCity))
+                    .put("Header.CompanyAddress.PostalCode", compose(Header::getCompanyAddress, Address::getPostalCode))
+                    .put("Header.CompanyAddress.Country", compose(Header::getCompanyAddress, Address::getCountry))
                     .build();
 
     /**
      * Creates a new differ for two AuditFiles
      * @param file1 the first file
-     * @param file2 the second file:59
+     * @param file2 the second file
      *
      */
     public SaftDiff(AuditFile file1, AuditFile file2) {
@@ -61,6 +66,7 @@ public final class SaftDiff {
     /**
      * Checks if the same field of two objects have the same value.
      * Returns an explanatory result.
+     *
      * @param t1 first object
      * @param t2 second object
      * @param methodName descriptive label
@@ -96,10 +102,12 @@ public final class SaftDiff {
      * @return the result of the diff
      */
     private Result headerDiff(Header h1, Header h2) {
-        List<Result> results = headerMethods.entrySet().stream()
+        List<Result> results = HEADER_METHODS.entrySet()
+                .stream()
                 .map(entry -> checkField(h1, h2, entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
 
         return Result.fromResults(results);
     }
+
 }

@@ -110,6 +110,9 @@ public final class Header {
      * @return the company address
      */
     public Address getCompanyAddress() {
+        if(companyAddress == null) {
+            return new Address();
+        }
         return companyAddress;
     }
 

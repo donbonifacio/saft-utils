@@ -19,6 +19,9 @@ public final class AuditFile {
      * @return Header
      */
     public Header getHeader() {
+        if(header == null) {
+            return new Header();
+        }
         return header;
     }
 }

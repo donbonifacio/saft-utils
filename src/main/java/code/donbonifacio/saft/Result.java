@@ -1,7 +1,5 @@
 package code.donbonifacio.saft;
 
-import code.donbonifacio.saft.exceptions.SaftLoaderException;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,64 +16,8 @@ public final class Result {
     private static final Result SUCCESS = new Result(true, "OK");
 
     /**
-     * Always return a success result
-     * @return the result
-     */
-    public static Result success() {
-        return SUCCESS;
-    }
-
-    /**
-     * Creates a failure result
-     * @param reason the failed reason
-     * @return the Result
-     */
-    public static Result failure(String reason) {
-        return new Result(false, reason);
-    }
-
-    /**
-     * Creates a failure result with an exception
-     * @param reason the string message
-     * @param ex the exception
-     * @return the result
-     */
-    public static Result failure(String reason, Exception ex) {
-        return failure(ex.getMessage(), ex);
-    }
-
-    /**
-     * Returns a result that wraps an exception
-     * @param ex the exception
-     * @return the result
-     */
-    public static Result exception(Exception ex) {
-        return failure(ex.getMessage(), ex);
-    }
-
-    /**
-     * Given a list of Results, checks to see if they all succeeded.
-     * If True, then returns a success result.
-     * @param results the results to consider
-     * @return a result that wraps the results
-     */
-    public static Result fromResults(List<Result> results) {
-        if (results.size() == 1) {
-            return results.get(0);
-        }
-
-        List<Result> failures = results.stream()
-                .filter(result -> result.isFailed())
-                .collect(Collectors.toList());
-
-        if (failures.size() == 1) {
-            return failures.get(0);
-        }
-
-        return new Result(failures.size() == 0, "From list of results", failures);
-    }
-    /**
-     * Creates a new resul
+     * Creates a new result
+     *
      * @param succeeded True if the result succeeded
      * @param reason a label string for the reason
      */
@@ -88,6 +30,7 @@ public final class Result {
 
     /**
      * Creates a Result
+     *
      * @param succeeded true of false
      * @param reason a label string for the reason
      * @param exception an exception if available
@@ -101,6 +44,7 @@ public final class Result {
 
     /**
      * Creates a Result
+     *
      * @param succeeded true of false
      * @param reason a label string for the reason
      * @param results an original source of results
@@ -113,7 +57,71 @@ public final class Result {
     }
 
     /**
+     * Always return a success result
+     *
+     * @return the result
+     */
+    public static Result success() {
+        return SUCCESS;
+    }
+
+    /**
+     * Creates a failure result
+     *
+     * @param reason the failed reason
+     * @return the Result
+     */
+    public static Result failure(String reason) {
+        return new Result(false, reason);
+    }
+
+    /**
+     * Creates a failure result with an exception
+     *
+     * @param reason the string message
+     * @param ex the exception
+     * @return the result
+     */
+    public static Result failure(String reason, Exception ex) {
+        return new Result(false, reason, ex);
+    }
+
+    /**
+     * Returns a result that wraps an exception
+     *
+     * @param ex the exception
+     * @return the result
+     */
+    public static Result exception(Exception ex) {
+        return failure(ex.getMessage(), ex);
+    }
+
+    /**
+     * Given a list of Results, checks to see if they all succeeded.
+     * If True, then returns a success result.
+     *
+     * @param results the results to consider
+     * @return a result that wraps the results
+     */
+    public static Result fromResults(List<Result> results) {
+        if (results.size() == 1) {
+            return results.get(0);
+        }
+
+        List<Result> failures = results.stream()
+                .filter(Result::isFailed)
+                .collect(Collectors.toList());
+
+        if (failures.size() == 1) {
+            return failures.get(0);
+        }
+
+        return new Result(failures.isEmpty(), "From list of results", failures);
+    }
+
+    /**
      * True if the result was succeeded
+     *
      * @return true of false
      */
     public boolean isSucceeded() {
@@ -122,6 +130,7 @@ public final class Result {
 
     /**
      * True if the result has failed
+     *
      * @return true or false
      */
     public boolean isFailed() {
@@ -130,6 +139,7 @@ public final class Result {
 
     /**
      * Gets a text reason for this Result
+     *
      * @return the reason
      */
     public String getReason() {
@@ -138,6 +148,7 @@ public final class Result {
 
     /**
      * String that represents this result
+     *
      * @return a descriptive String
      */
     @Override
@@ -160,5 +171,4 @@ public final class Result {
         builder.append("}");
         return builder.toString();
     }
-
 }
