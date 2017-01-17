@@ -1,9 +1,6 @@
 package code.donbonifacio.saft;
 
-import code.donbonifacio.saft.elements.AuditFile;
-import code.donbonifacio.saft.elements.Header;
-import code.donbonifacio.saft.elements.MasterFiles;
-import code.donbonifacio.saft.elements.Product;
+import code.donbonifacio.saft.elements.*;
 import code.donbonifacio.saft.exceptions.SaftLoaderException;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -70,17 +67,36 @@ public class SaftLoaderTest
         assertEquals("1.0", header.getProductVersion());
 
         final MasterFiles masterFiles = auditFile.getMasterFiles();
+        checkNotNull(masterFiles);
 
         final Product product = masterFiles.getProducts().get(0);
+        checkNotNull(product);
         assertEquals("S", product.getProductType());
         assertEquals("Product Code", product.getProductCode());
         assertEquals("Product Description", product.getProductDescription());
         assertEquals("Product Number Code", product.getProductNumberCode());
+
+        final Customer customer = masterFiles.getCustomers().get(0);
+        checkNotNull(customer);
+        assertEquals("123", customer.getCustomerId());
+        assertEquals("Desconhecido", customer.getAccountId());
+        assertEquals("123123123", customer.getCustomerTaxId());
+        assertEquals("Claudinha", customer.getCompanyName());
+        assertEquals("Desconhecido", customer.getBillingAddress().getAddressDetail());
+        assertEquals("Desconhecido", customer.getBillingAddress().getCity());
+        assertEquals("0000-000", customer.getBillingAddress().getPostalCode());
+        assertEquals("PT", customer.getBillingAddress().getCountry());
+        assertEquals("Desconhecido", customer.getTelephone());
+        assertEquals("Desconhecido", customer.getFax());
+        assertEquals("Desconhecido", customer.getEmail());
+        assertEquals("Desconhecido", customer.getWebsite());
+        assertEquals(0, customer.getSelfBillingIndicator());
     }
 
     /**
      * Loads the simple SAF-T xml example and checks that the data
      * is the expected one
+     *
      * @throws SaftLoaderException
      */
     public void testLoadSampleFile() throws SaftLoaderException {
