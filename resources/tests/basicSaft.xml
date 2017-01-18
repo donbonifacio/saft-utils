@@ -55,13 +55,6 @@
         <Description>IVA23</Description>
         <TaxPercentage>23.00</TaxPercentage>
       </TaxTableEntry>
-      <TaxTableEntry>
-        <TaxType>IVA</TaxType>
-        <TaxCountryRegion>PT</TaxCountryRegion>
-        <TaxCode>ISE</TaxCode>
-        <Description>Isento</Description>
-        <TaxPercentage>0.00</TaxPercentage>
-      </TaxTableEntry>
     </TaxTable>
   </MasterFiles>
 </AuditFile>

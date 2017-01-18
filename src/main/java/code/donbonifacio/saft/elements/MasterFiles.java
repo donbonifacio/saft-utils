@@ -12,12 +12,14 @@ public class MasterFiles {
 
     @XmlElements({
             @XmlElement(name = "Product",     type = Product.class),
-            @XmlElement(name = "Customer",     type = Customer.class)
+            @XmlElement(name = "Customer",     type = Customer.class),
+            @XmlElement(name = "TaxTable",     type = TaxTable.class)
     })
     private List<Object> masterFilesElements;
 
     private List<Product> products;
     private List<Customer> customers;
+    private TaxTable taxTable;
 
     /**
      * Gets the products defined on this MasterFiles
@@ -47,5 +49,26 @@ public class MasterFiles {
                     .collect(Collectors.toList());
         }
         return customers;
+    }
+
+    /**
+     * Gets the TaxTable
+     *
+     * @return the tax table
+     */
+    public TaxTable getTaxTable() {
+        if(taxTable == null) {
+            final List<TaxTable> taxes = masterFilesElements
+                    .stream()
+                    .filter(obj -> TaxTable.class.equals(obj.getClass()))
+                    .map(obj-> (TaxTable) obj)
+                    .collect(Collectors.toList());
+            if(taxes.isEmpty()) {
+                taxTable = new TaxTable();
+            } else {
+                taxTable = taxes.get(0);
+            }
+        }
+        return taxTable;
     }
 }

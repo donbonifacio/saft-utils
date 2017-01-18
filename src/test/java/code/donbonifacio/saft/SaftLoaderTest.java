@@ -91,6 +91,14 @@ public class SaftLoaderTest
         assertEquals("Desconhecido", customer.getEmail());
         assertEquals("Desconhecido", customer.getWebsite());
         assertEquals(0, customer.getSelfBillingIndicator());
+
+        final TaxTable taxTable = masterFiles.getTaxTable();
+        final TaxTableEntry entry = masterFiles.getTaxTable().getTaxTableEntries().get(0);
+        assertEquals("IVA", entry.getTaxType());
+        assertEquals("PT", entry.getTaxCountryRegion());
+        assertEquals("NOR", entry.getTaxCode());
+        assertEquals("IVA23", entry.getDescription());
+        assertEquals(23.00, entry.getTaxPercentage());
     }
 
     /**
