@@ -171,4 +171,13 @@ public final class Result {
         builder.append("}");
         return builder.toString();
     }
+
+    /**
+     * True if this result contains an exception
+     *
+     * @return true or false
+     */
+    public boolean isException() {
+        return exception != null;
+    }
 }
