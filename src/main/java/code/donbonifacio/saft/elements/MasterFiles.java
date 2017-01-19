@@ -2,6 +2,7 @@ package code.donbonifacio.saft.elements;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,10 +28,11 @@ public class MasterFiles {
      * @return a list of products
      */
     public List<Product> getProducts() {
-        if(products == null) {
-            products = masterFilesElements.stream()
+        if (products == null) {
+            products = getMasterFilesElements()
+                    .stream()
                     .filter(obj -> Product.class.equals(obj.getClass()))
-                    .map(obj-> (Product) obj)
+                    .map(obj -> (Product) obj)
                     .collect(Collectors.toList());
         }
         return products;
@@ -70,5 +72,17 @@ public class MasterFiles {
             }
         }
         return taxTable;
+    }
+
+    /**
+     * Gets the master files elements, creates an empty one of it's null
+     *
+     * @return the master files elements
+     */
+    private List<Object> getMasterFilesElements() {
+        if(masterFilesElements == null) {
+            masterFilesElements = new ArrayList<Object>(0);
+        }
+        return masterFilesElements;
     }
 }

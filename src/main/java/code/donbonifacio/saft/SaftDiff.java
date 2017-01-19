@@ -3,10 +3,10 @@ package code.donbonifacio.saft;
 import code.donbonifacio.saft.elements.Address;
 import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.elements.Header;
+import code.donbonifacio.saft.elements.Product;
 import com.google.common.collect.ImmutableMap;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,6 +44,15 @@ public final class SaftDiff {
                     .put("Header.CompanyAddress.Country", compose(Header::getCompanyAddress, Address::getCountry))
                     .build();
 
+    // maps a friendly name to a Product field getter
+    static final Map<String, Function<Product, Object>> PRODUCT_METHODS =
+            ImmutableMap.<String, Function<Product, Object>>builder()
+                    .put("MasterFiles.Product.ProductCode", Product::getProductCode)
+                    .put("MasterFiles.Product.ProductType", Product::getProductType)
+                    .put("MasterFiles.Product.ProductDescription", Product::getProductDescription)
+                    .put("MasterFiles.Product.ProductNumberCode", Product::getProductNumberCode)
+                    .build();
+
     /**
      * Creates a new differ for two AuditFiles
      * @param file1 the first file
@@ -60,7 +69,9 @@ public final class SaftDiff {
      * @return the result
      */
     public Result process() {
-        return headerDiff(file1.getHeader(), file2.getHeader());
+        List<Result> results = headerDiff(file1.getHeader(), file2.getHeader());
+        results.addAll(productDiff(file1.getMasterFiles().getProducts(), file2.getMasterFiles().getProducts()));
+        return Result.fromResults(results);
     }
 
     /**
@@ -99,15 +110,34 @@ public final class SaftDiff {
 
     /**
      * Gets the diffs from the header element
+     *
      * @return the result of the diff
      */
-    private Result headerDiff(Header h1, Header h2) {
-        List<Result> results = HEADER_METHODS.entrySet()
+    private List<Result> headerDiff(Header h1, Header h2) {
+        return HEADER_METHODS.entrySet()
                 .stream()
                 .map(entry -> checkField(h1, h2, entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
-
-        return Result.fromResults(results);
     }
 
+    /**
+     * Gets the diffs from the Product elements
+     *
+     * @return the result of the diff
+     */
+    private List<Result> productDiff(List<Product> products1, List<Product> products2) {
+        if(products1.isEmpty() && products2.isEmpty()) {
+            return new ArrayList<>(Arrays.asList(Result.success()));
+        }
+
+        Product p1 = products1.get(0);
+        Product p2 = products2.get(0);
+
+        List<Result> results = PRODUCT_METHODS.entrySet()
+                .stream()
+                .map(entry -> checkField(p1, p2, entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        return results;
+    }
 }

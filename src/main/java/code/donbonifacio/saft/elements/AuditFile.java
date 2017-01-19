@@ -28,7 +28,15 @@ public final class AuditFile {
         return header;
     }
 
+    /**
+     * Gets the MasterFiles
+     *
+     * @return the master files
+     */
     public MasterFiles getMasterFiles() {
+        if(masterFiles == null) {
+            masterFiles = new MasterFiles();
+        }
         return masterFiles;
     }
 }
