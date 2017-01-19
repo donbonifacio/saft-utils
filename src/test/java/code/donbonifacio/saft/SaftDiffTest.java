@@ -2,7 +2,6 @@ package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.exceptions.SaftLoaderException;
-import com.google.common.collect.ImmutableList;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Executable;
@@ -25,7 +24,7 @@ public class SaftDiffTest extends TestCase {
      * @param f2 the second AuditFile
      * @return the Result
      */
-    private Result assertDiffSuccess(AuditFile f1, AuditFile f2) {
+    protected Result assertDiffSuccess(AuditFile f1, AuditFile f2) {
         final SaftDiff diff = new SaftDiff(f1, f2);
         final Result result = diff.process();
         assertTrue(result.isSucceeded());
@@ -39,7 +38,7 @@ public class SaftDiffTest extends TestCase {
      * @param f2 the second AuditFile
      * @return the result
      */
-    private Result assertDiffFailure(AuditFile f1, AuditFile f2) {
+    protected Result assertDiffFailure(AuditFile f1, AuditFile f2) {
         final SaftDiff diff = new SaftDiff(f1, f2);
         final Result result = diff.process();
         assertTrue("SAF-T diff should have failed", result.isFailed());
@@ -76,7 +75,7 @@ public class SaftDiffTest extends TestCase {
      * @param value the element value
      * @return the XML String representation
      */
-    private String singleElement(String element, Object value) {
+    protected String singleElement(String element, Object value) {
         StringBuilder builder = new StringBuilder();
         builder.append("<AuditFile xmlns=\"urn:OECD:StandardAuditFile-Tax:PT_1.03_01\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 
@@ -105,7 +104,7 @@ public class SaftDiffTest extends TestCase {
      * @param field the field to consider
      * @return the DynamicTest
      */
-    private DynamicTest createFieldMismatchTest(String field) {
+    protected DynamicTest createFieldMismatchTest(String field) {
         String testName = "Test header field " + field;
         try {
             final AuditFile f1 = SaftLoader.loadFromString(singleElement(field, "1"));
@@ -128,20 +127,4 @@ public class SaftDiffTest extends TestCase {
         }
     }
 
-    /**
-     * Given a list of header fields, generates tests that create specific
-     * AuditFiles for each field and check that if they are different
-     * we have an error.
-     *
-     * @return the list of generated tests
-     */
-    @TestFactory
-    public List<DynamicTest> generateMismatchHeaderTests() {
-        return SaftDiff.HEADER_METHODS
-                .entrySet()
-                .stream()
-                .map(entry -> entry.getKey())
-                .map(headerField -> createFieldMismatchTest(headerField))
-                .collect(Collectors.toList());
-    }
 }
