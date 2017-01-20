@@ -1,5 +1,7 @@
 package code.donbonifacio.saft;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -179,5 +181,16 @@ public final class Result {
      */
     public boolean isException() {
         return exception != null;
+    }
+
+
+    /**
+     * Converts this Result in a list that contains only
+     * this result
+     *
+     * @return a list with one result
+     */
+    public List<Result> asList() {
+        return new ArrayList<>(Arrays.asList(this));
     }
 }

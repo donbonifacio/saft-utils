@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static code.donbonifacio.saft.Util.compose;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Calculates the differences between two SAF-T files
@@ -126,8 +127,15 @@ public final class SaftDiff {
      * @return the result of the diff
      */
     private List<Result> productDiff(List<Product> products1, List<Product> products2) {
+        checkNotNull(products1);
+        checkNotNull(products2);
+
         if(products1.isEmpty() && products2.isEmpty()) {
             return new ArrayList<>(Arrays.asList(Result.success()));
+        }
+
+        if(products1.size() != products2.size()) {
+            return Result.failure(String.format("Products size mismatch [%s != %s]", products1.size(), products2.size())).asList();
         }
 
         Product p1 = products1.get(0);

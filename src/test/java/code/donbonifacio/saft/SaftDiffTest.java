@@ -99,6 +99,19 @@ public class SaftDiffTest extends TestCase {
     }
 
     /**
+     * Creates an AuditFile from a vargars of Strings. It will join them
+     * all and create an AuditFile from it.
+     *
+     * @param args all the strings to join
+     * @return the AuditFile
+     * @throws SaftLoaderException
+     */
+    protected AuditFile createAuditFile(String... args) throws SaftLoaderException {
+        String raw = Arrays.stream(args).collect(Collectors.joining());
+        return SaftLoader.loadFromString(raw);
+    }
+
+    /**
      * Creates a test that verifies that if we have different values on
      * the given field, we have a proper error.
      * @param field the field to consider

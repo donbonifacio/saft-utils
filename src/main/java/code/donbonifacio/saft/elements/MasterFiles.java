@@ -81,7 +81,7 @@ public class MasterFiles {
      */
     private List<Object> getMasterFilesElements() {
         if(masterFilesElements == null) {
-            masterFilesElements = new ArrayList<Object>(0);
+            masterFilesElements = new ArrayList<>(0);
         }
         return masterFilesElements;
     }
