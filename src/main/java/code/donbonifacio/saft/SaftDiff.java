@@ -138,24 +138,45 @@ public final class SaftDiff {
             return Result.failure(String.format("Products size mismatch [%s != %s]", products1.size(), products2.size())).asList();
         }
 
-        List<Result> p1diffs = products1.stream()
+        List<Result> p1diffs = checkProducs(products1, products2, true);
+        List<Result> p2diffs = checkProducs(products2, products1, false);
+
+        p1diffs.addAll(p2diffs);
+
+        return p1diffs;
+    }
+
+    /**
+     * Checks that the products on the first collection exist on the
+     * second collection. If checkFields and a match is found, then
+     * all the fields will be compared.
+     *
+     * @param products1 first collection
+     * @param products2 second collection
+     * @param verifyFields true to verify model fields
+     * @return
+     */
+    private List<Result> checkProducs(List<Product> products1, List<Product> products2, boolean verifyFields) {
+        return products1.stream()
                 .map(p1 -> {
                     String code = p1.getProductCode();
                     Optional<Product> p2 = findProduct(products2, code);
                     if(!p2.isPresent()) {
-                        return Result.failure(String.format("Product code %s not present on second file", code));
+                        return Result.failure(String.format("Product code %s not present on %s file", code, verifyFields ? "second" : "first"));
                     }
 
-                    List<Result> fieldResults = PRODUCT_METHODS.entrySet()
-                            .stream()
-                            .map(entry -> checkField(p1, p2.get(), entry.getKey(), entry.getValue()))
-                            .collect(Collectors.toList());
+                    if(verifyFields) {
+                        List<Result> fieldResults = PRODUCT_METHODS.entrySet()
+                                .stream()
+                                .map(entry -> checkField(p1, p2.get(), entry.getKey(), entry.getValue()))
+                                .collect(Collectors.toList());
 
-                    return Result.fromResults(fieldResults);
+                        return Result.fromResults(fieldResults);
+                    }
+
+                    return Result.success();
 
                 }).collect(Collectors.toList());
-
-        return p1diffs;
     }
 
     /**
