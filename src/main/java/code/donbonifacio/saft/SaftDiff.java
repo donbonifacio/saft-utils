@@ -48,7 +48,7 @@ public final class SaftDiff {
     // maps a friendly name to a Product field getter
     static final Map<String, Function<Product, Object>> PRODUCT_METHODS =
             ImmutableMap.<String, Function<Product, Object>>builder()
-                    .put("MasterFiles.Product.ProductCode", Product::getProductCode)
+                    //.put("MasterFiles.Product.ProductCode", Product::getProductCode)
                     .put("MasterFiles.Product.ProductType", Product::getProductType)
                     .put("MasterFiles.Product.ProductDescription", Product::getProductDescription)
                     .put("MasterFiles.Product.ProductNumberCode", Product::getProductNumberCode)
@@ -138,14 +138,40 @@ public final class SaftDiff {
             return Result.failure(String.format("Products size mismatch [%s != %s]", products1.size(), products2.size())).asList();
         }
 
-        Product p1 = products1.get(0);
-        Product p2 = products2.get(0);
+        List<Result> p1diffs = products1.stream()
+                .map(p1 -> {
+                    String code = p1.getProductCode();
+                    Optional<Product> p2 = findProduct(products2, code);
+                    if(!p2.isPresent()) {
+                        return Result.failure(String.format("Product code %s not present on second file", code));
+                    }
 
-        List<Result> results = PRODUCT_METHODS.entrySet()
-                .stream()
-                .map(entry -> checkField(p1, p2, entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
+                    List<Result> fieldResults = PRODUCT_METHODS.entrySet()
+                            .stream()
+                            .map(entry -> checkField(p1, p2.get(), entry.getKey(), entry.getValue()))
+                            .collect(Collectors.toList());
 
-        return results;
+                    return Result.fromResults(fieldResults);
+
+                }).collect(Collectors.toList());
+
+        return p1diffs;
+    }
+
+    /**
+     * Finds a product on a list of products
+     *
+     * @param products the list of products
+     * @param code the code to search for
+     * @return an optional product
+     */
+    private Optional<Product> findProduct(List<Product> products, String code) {
+        if(products == null) {
+            return Optional.empty();
+        }
+        return products.stream()
+                .filter(product -> product.getProductCode() == code ||
+                        product.getProductCode().equals(code))
+                .findAny();
     }
 }
