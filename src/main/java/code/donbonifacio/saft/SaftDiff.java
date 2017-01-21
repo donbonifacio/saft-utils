@@ -1,6 +1,5 @@
 package code.donbonifacio.saft;
 
-import code.donbonifacio.saft.elements.Address;
 import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.elements.Header;
 import code.donbonifacio.saft.elements.Product;
@@ -10,52 +9,19 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static code.donbonifacio.saft.Util.compose;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Calculates the differences between two SAF-T files
+ * Calculates the differences between two SAF-T file
  */
 public final class SaftDiff {
 
     private final AuditFile file1;
     private final AuditFile file2;
 
-    // maps a friendly name to a Header field getter
-    static final Map<String, Function<Header, Object>> HEADER_METHODS =
-            ImmutableMap.<String, Function<Header, Object>>builder()
-                    .put("Header.AuditFileVersion", Header::getAuditFileVersion)
-                    .put("Header.CompanyID", Header::getCompanyID)
-                    .put("Header.TaxRegistrationNumber", Header::getTaxRegistrationNumber)
-                    .put("Header.TaxAccountingBasis", Header::getTaxAccountingBasis)
-                    .put("Header.CompanyName", Header::getCompanyName)
-                    .put("Header.FiscalYear", Header::getFiscalYear)
-                    .put("Header.StartDate", Header::getStartDate)
-                    .put("Header.EndDate", Header::getEndDate)
-                    .put("Header.DateCreated", Header::getDateCreated)
-                    .put("Header.CurrencyCode", Header::getCurrencyCode)
-                    .put("Header.TaxEntity", Header::getTaxEntity)
-                    .put("Header.ProductCompanyTaxID", Header::getProductCompanyTaxId)
-                    .put("Header.SoftwareCertificateNumber", Header::getSoftwareCertificateNumber)
-                    .put("Header.ProductID", Header::getProductId)
-                    .put("Header.ProductVersion", Header::getProductVersion)
-                    .put("Header.CompanyAddress.AddressDetail", compose(Header::getCompanyAddress, Address::getAddressDetail))
-                    .put("Header.CompanyAddress.City", compose(Header::getCompanyAddress, Address::getCity))
-                    .put("Header.CompanyAddress.PostalCode", compose(Header::getCompanyAddress, Address::getPostalCode))
-                    .put("Header.CompanyAddress.Country", compose(Header::getCompanyAddress, Address::getCountry))
-                    .build();
-
-    // maps a friendly name to a Product field getter
-    static final Map<String, Function<Product, Object>> PRODUCT_METHODS =
-            ImmutableMap.<String, Function<Product, Object>>builder()
-                    //.put("MasterFiles.Product.ProductCode", Product::getProductCode)
-                    .put("MasterFiles.Product.ProductType", Product::getProductType)
-                    .put("MasterFiles.Product.ProductDescription", Product::getProductDescription)
-                    .put("MasterFiles.Product.ProductNumberCode", Product::getProductNumberCode)
-                    .build();
-
     /**
      * Creates a new differ for two AuditFiles
+     *
      * @param file1 the first file
      * @param file2 the second file
      *
@@ -72,7 +38,7 @@ public final class SaftDiff {
      */
     public Result process() {
         List<Result> results = headerDiff(file1.getHeader(), file2.getHeader());
-        results.addAll(modelDiff(file1.getMasterFiles().getProducts(), file2.getMasterFiles().getProducts(), PRODUCT_METHODS, Product::getProductCode));
+        results.addAll(modelDiff(file1.getMasterFiles().getProducts(), file2.getMasterFiles().getProducts(), Product.FIELDS, Product::getProductCode));
         return Result.fromResults(results);
     }
 
@@ -116,7 +82,7 @@ public final class SaftDiff {
      * @return the result of the diff
      */
     private List<Result> headerDiff(Header h1, Header h2) {
-        return HEADER_METHODS.entrySet()
+        return Header.FIELDS.entrySet()
                 .stream()
                 .map(entry -> checkField(h1, h2, entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());

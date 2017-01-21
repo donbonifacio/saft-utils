@@ -1,7 +1,11 @@
 package code.donbonifacio.saft.elements;
 
+import com.google.common.collect.ImmutableMap;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * This class represents a `Product` xml element on the standard
@@ -11,6 +15,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name="Product")
 public final class Product {
+
+    // maps a friendly name to a Product field getter
+    public static final Map<String, Function<Product, Object>> FIELDS =
+            ImmutableMap.<String, Function<Product, Object>>builder()
+                    //.put("MasterFiles.Product.ProductCode", Product::getProductCode)
+                    .put("MasterFiles.Product.ProductType", Product::getProductType)
+                    .put("MasterFiles.Product.ProductDescription", Product::getProductDescription)
+                    .put("MasterFiles.Product.ProductNumberCode", Product::getProductNumberCode)
+                    .build();
 
     @XmlElement(name="ProductCode")
     private String productCode;

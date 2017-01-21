@@ -1,6 +1,12 @@
 package code.donbonifacio.saft.elements;
 
+import com.google.common.collect.ImmutableMap;
+
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Map;
+import java.util.function.Function;
+
+import static code.donbonifacio.saft.Util.compose;
 
 /**
   * This class represents a `Header` xml element from the standard
@@ -8,6 +14,30 @@ import javax.xml.bind.annotation.XmlElement;
  * The class is immutable.
  */
 public final class Header {
+
+    // maps a friendly name to a Header field getter
+    public static final Map<String, Function<Header, Object>> FIELDS =
+            ImmutableMap.<String, Function<Header, Object>>builder()
+                    .put("Header.AuditFileVersion", Header::getAuditFileVersion)
+                    .put("Header.CompanyID", Header::getCompanyID)
+                    .put("Header.TaxRegistrationNumber", Header::getTaxRegistrationNumber)
+                    .put("Header.TaxAccountingBasis", Header::getTaxAccountingBasis)
+                    .put("Header.CompanyName", Header::getCompanyName)
+                    .put("Header.FiscalYear", Header::getFiscalYear)
+                    .put("Header.StartDate", Header::getStartDate)
+                    .put("Header.EndDate", Header::getEndDate)
+                    .put("Header.DateCreated", Header::getDateCreated)
+                    .put("Header.CurrencyCode", Header::getCurrencyCode)
+                    .put("Header.TaxEntity", Header::getTaxEntity)
+                    .put("Header.ProductCompanyTaxID", Header::getProductCompanyTaxId)
+                    .put("Header.SoftwareCertificateNumber", Header::getSoftwareCertificateNumber)
+                    .put("Header.ProductID", Header::getProductId)
+                    .put("Header.ProductVersion", Header::getProductVersion)
+                    .put("Header.CompanyAddress.AddressDetail", compose(Header::getCompanyAddress, Address::getAddressDetail))
+                    .put("Header.CompanyAddress.City", compose(Header::getCompanyAddress, Address::getCity))
+                    .put("Header.CompanyAddress.PostalCode", compose(Header::getCompanyAddress, Address::getPostalCode))
+                    .put("Header.CompanyAddress.Country", compose(Header::getCompanyAddress, Address::getCountry))
+                    .build();
 
     @XmlElement(name="AuditFileVersion")
     private String auditFileVersion;

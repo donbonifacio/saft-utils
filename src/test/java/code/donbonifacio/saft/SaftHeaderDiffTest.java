@@ -1,5 +1,6 @@
 package code.donbonifacio.saft;
 
+import code.donbonifacio.saft.elements.Header;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
@@ -20,7 +21,7 @@ public final class SaftHeaderDiffTest extends SaftDiffTest {
    */
   @TestFactory
   public List<DynamicTest> generateMismatchHeaderTests() {
-   return SaftDiff.HEADER_METHODS
+   return Header.FIELDS
            .entrySet()
            .stream()
            .map(entry -> entry.getKey())

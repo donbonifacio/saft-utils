@@ -1,6 +1,7 @@
 package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.AuditFile;
+import code.donbonifacio.saft.elements.Product;
 import code.donbonifacio.saft.exceptions.SaftLoaderException;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -22,7 +23,7 @@ public class SaftProductDiffTest extends SaftDiffTest {
      */
     @TestFactory
     public List<DynamicTest> generateMismatchProductTests() {
-        return SaftDiff.PRODUCT_METHODS
+        return Product.FIELDS
                 .entrySet()
                 .stream()
                 .map(entry -> entry.getKey())
