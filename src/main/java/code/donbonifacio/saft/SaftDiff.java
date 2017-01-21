@@ -3,7 +3,6 @@ package code.donbonifacio.saft;
 import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.elements.Header;
 import code.donbonifacio.saft.elements.Product;
-import com.google.common.collect.ImmutableMap;
 
 import java.util.*;
 import java.util.function.Function;

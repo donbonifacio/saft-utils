@@ -54,6 +54,5 @@ public class ResultTest extends TestCase {
         Result r2 = Result.fromResults(r1.asList());
 
         assertTrue(r1 == r2);
-
     }
 }
