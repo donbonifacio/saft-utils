@@ -30,6 +30,32 @@ public final class SaftDiff {
         this.file2 = file2;
     }
 
+    private class ModelData<T, E> {
+        final List<T> models1;
+        final List<T> models2;
+        final Map<String, Function<T, Object>> modelMethods;
+        final Function<T, E> keyGetter;
+
+        ModelData(List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter) {
+            this.models1 = models1;
+            this.models2 = models2;
+            this.modelMethods = modelMethods;
+            this.keyGetter = keyGetter;
+        }
+
+        public ModelData<T,E> switchModels() {
+            return new ModelData<>(models2, models1, modelMethods, keyGetter);
+        }
+
+        public ModelData<T, E> prepareFor(boolean firstPass) {
+            if(firstPass) {
+                return this;
+            } else {
+                return switchModels();
+            }
+        }
+    }
+
     /**
      * Processes the given data and returns a Result
      *
@@ -37,8 +63,114 @@ public final class SaftDiff {
      */
     public Result process() {
         List<Result> results = headerDiff(file1.getHeader(), file2.getHeader());
-        results.addAll(modelDiff(file1.getMasterFiles().getProducts(), file2.getMasterFiles().getProducts(), Product.FIELDS, Product::getProductCode));
+
+        ModelData<Product, String> productsData = new ModelData<>(
+                file1.getMasterFiles().getProducts(),
+                file2.getMasterFiles().getProducts(),
+                Product.FIELDS,
+                Product::getProductCode
+        );
+        results.addAll(modelDiff(productsData));
+
         return Result.fromResults(results);
+    }
+
+    /**
+     * Gets the diffs from the header element
+     *
+     * @return the result of the diff
+     */
+    private List<Result> headerDiff(Header h1, Header h2) {
+        return Header.FIELDS.entrySet()
+                .stream()
+                .map(entry -> checkField(h1, h2, entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the diffs from the Product elements
+     *
+     * @return the result of the diff
+     */
+    private <T, E> List<Result> modelDiff(ModelData<T, E> modelData) {
+        checkNotNull(modelData.models1);
+        checkNotNull(modelData.models2);
+
+        if(modelData.models1.isEmpty() && modelData.models2.isEmpty()) {
+            return Result.success().asList();
+        }
+
+        if(modelData.models1.size() != modelData.models2.size()) {
+            return Result.failure(String.format("%ss size mismatch [%s != %s]", "Product", modelData.models1.size(), modelData.models2.size())).asList();
+        }
+
+        List<Result> p1diffs = checkModels(modelData, true);
+        List<Result> p2diffs = checkModels(modelData, false);
+
+        p1diffs.addAll(p2diffs);
+
+        return p1diffs;
+    }
+
+    /**
+     * Checks that the products on the first collection exist on the
+     * second collection. If checkFields and a match is found, then
+     * all the fields will be compared.
+     *
+     * @param models1 the first collection of models
+     * @param models2 the second collection of models
+     * @param modelMethods the map of model fields to test
+     * @param keyGetter a function that gets the key of the model
+     * @param verifyFields true of the fields should be verified
+     * @param <T> the model parameter
+     * @param <E> the type of the model key
+     * @return the list of results
+     */
+    private <T, E> List<Result> checkModels(ModelData<T, E> sourceData, boolean firstPass) {
+        final ModelData<T, E> modelData = sourceData.prepareFor(firstPass);
+
+        return modelData.models1.stream()
+                .map(m1 -> {
+                    E code = modelData.keyGetter.apply(m1);
+                    Optional<T> m2 = findModel(modelData.models2, modelData.keyGetter, code);
+                    if(!m2.isPresent()) {
+                        return Result.failure(String.format("Product code %s not present on %s file", code, firstPass ? "second" : "first"));
+                    }
+
+                    if(firstPass) {
+                        List<Result> fieldResults = modelData.modelMethods.entrySet()
+                                .stream()
+                                .map(entry -> checkField(m1, m2.get(), entry.getKey(), entry.getValue()))
+                                .collect(Collectors.toList());
+
+                        return Result.fromResults(fieldResults);
+                    }
+
+                    return Result.success();
+
+                }).collect(Collectors.toList());
+    }
+
+    /**
+     * Finds a model by a key on a collection of models
+     *
+     * @param models the collection of models
+     * @param keyGetter the function that obtains the key value
+     * @param code the key code to search for
+     * @param <T> the model type
+     * @param <E> the type of the key
+     * @return an option model
+     */
+    private <T, E> Optional<T> findModel(List<T> models, Function<T, E> keyGetter, E code) {
+        if(models == null) {
+            return Optional.empty();
+        }
+        return models.stream()
+                .filter(model -> {
+                    E key = keyGetter.apply(model);
+                    return key == code || key.equals(code);
+                })
+                .findAny();
     }
 
     /**
@@ -75,99 +207,4 @@ public final class SaftDiff {
         return Result.success();
     }
 
-    /**
-     * Gets the diffs from the header element
-     *
-     * @return the result of the diff
-     */
-    private List<Result> headerDiff(Header h1, Header h2) {
-        return Header.FIELDS.entrySet()
-                .stream()
-                .map(entry -> checkField(h1, h2, entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets the diffs from the Product elements
-     *
-     * @return the result of the diff
-     */
-    private <T, E> List<Result> modelDiff(List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter) {
-        checkNotNull(models1);
-        checkNotNull(models2);
-
-        if(models1.isEmpty() && models2.isEmpty()) {
-            return Result.success().asList();
-        }
-
-        if(models1.size() != models2.size()) {
-            return Result.failure(String.format("%ss size mismatch [%s != %s]", "Product", models1.size(), models2.size())).asList();
-        }
-
-        List<Result> p1diffs = checkModels(models1, models2, modelMethods, keyGetter,true);
-        List<Result> p2diffs = checkModels(models2, models1, modelMethods, keyGetter,false);
-
-        p1diffs.addAll(p2diffs);
-
-        return p1diffs;
-    }
-
-    /**
-     * Checks that the products on the first collection exist on the
-     * second collection. If checkFields and a match is found, then
-     * all the fields will be compared.
-     *
-     * @param models1 the first collection of models
-     * @param models2 the second collection of models
-     * @param modelMethods the map of model fields to test
-     * @param keyGetter a function that gets the key of the model
-     * @param verifyFields true of the fields should be verified
-     * @param <T> the model parameter
-     * @param <E> the type of the model key
-     * @return the list of results
-     */
-    private <T, E> List<Result> checkModels(List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter, boolean verifyFields) {
-        return models1.stream()
-                .map(m1 -> {
-                    E code = keyGetter.apply(m1);
-                    Optional<T> m2 = findModel(models2, keyGetter, code);
-                    if(!m2.isPresent()) {
-                        return Result.failure(String.format("Product code %s not present on %s file", code, verifyFields ? "second" : "first"));
-                    }
-
-                    if(verifyFields) {
-                        List<Result> fieldResults = modelMethods.entrySet()
-                                .stream()
-                                .map(entry -> checkField(m1, m2.get(), entry.getKey(), entry.getValue()))
-                                .collect(Collectors.toList());
-
-                        return Result.fromResults(fieldResults);
-                    }
-
-                    return Result.success();
-
-                }).collect(Collectors.toList());
-    }
-
-    /**
-     * Finds a model by a key on a collection of models
-     *
-     * @param models the collection of models
-     * @param keyGetter the function that obtains the key value
-     * @param code the key code to search for
-     * @param <T> the model type
-     * @param <E> the type of the key
-     * @return an option model
-     */
-    private <T, E> Optional<T> findModel(List<T> models, Function<T, E> keyGetter, E code) {
-        if(models == null) {
-            return Optional.empty();
-        }
-        return models.stream()
-                .filter(model -> {
-                    E key = keyGetter.apply(model);
-                    return key == code || key.equals(code);
-                })
-                .findAny();
-    }
 }

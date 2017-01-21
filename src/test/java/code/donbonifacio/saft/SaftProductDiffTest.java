@@ -95,6 +95,7 @@ public class SaftProductDiffTest extends SaftDiffTest {
 
         Result result = new SaftDiff(f1, f2).process();
         assertTrue(result.isFailed());
+        System.out.println(result);
         assertEquals("Product code 3 not present on second file", result.getReason());
     }
 
