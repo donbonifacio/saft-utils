@@ -41,6 +41,7 @@ public class SaftDiffTest extends TestCase {
     protected Result assertDiffFailure(AuditFile f1, AuditFile f2) {
         final SaftDiff diff = new SaftDiff(f1, f2);
         final Result result = diff.process();
+
         assertTrue("SAF-T diff should have failed", result.isFailed());
         return result;
     }

@@ -1,6 +1,7 @@
 package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.AuditFile;
+import code.donbonifacio.saft.elements.Customer;
 import code.donbonifacio.saft.elements.Header;
 import code.donbonifacio.saft.elements.Product;
 
@@ -42,6 +43,7 @@ public final class SaftDiff {
      * @param <E> The type of the model's key
      */
     private final class ModelData<T, E> {
+        final String modelName;
         final List<T> models1;
         final List<T> models2;
         final Map<String, Function<T, Object>> modelMethods;
@@ -55,7 +57,8 @@ public final class SaftDiff {
          * @param modelMethods the methods that compare two instances
          * @param keyGetter the method that gets the key value
          */
-        ModelData(List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter) {
+        ModelData(String modelName, List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter) {
+            this.modelName = modelName;
             this.models1 = models1;
             this.models2 = models2;
             this.modelMethods = modelMethods;
@@ -69,7 +72,7 @@ public final class SaftDiff {
          * @return a new ModelData with collections switched
          */
         private ModelData<T,E> switchModels() {
-            return new ModelData<>(models2, models1, modelMethods, keyGetter);
+            return new ModelData<>(modelName, models2, models1, modelMethods, keyGetter);
         }
 
         /**
@@ -98,12 +101,22 @@ public final class SaftDiff {
         List<Result> results = headerDiff(file1.getHeader(), file2.getHeader());
 
         ModelData<Product, String> productsData = new ModelData<>(
+                "Product",
                 file1.getMasterFiles().getProducts(),
                 file2.getMasterFiles().getProducts(),
                 Product.FIELDS,
                 Product::getProductCode
         );
         results.addAll(modelDiff(productsData));
+
+        ModelData<Customer, String> customersData = new ModelData<>(
+                "Customer",
+                file1.getMasterFiles().getCustomers(),
+                file2.getMasterFiles().getCustomers(),
+                Customer.FIELDS,
+                Customer::getCustomerId
+        );
+        results.addAll(modelDiff(customersData));
 
         return Result.fromResults(results);
     }
@@ -116,7 +129,7 @@ public final class SaftDiff {
     private List<Result> headerDiff(Header h1, Header h2) {
         return Header.FIELDS.entrySet()
                 .stream()
-                .map(entry -> checkField(h1, h2, entry.getKey(), entry.getValue()))
+                .map(entry -> compareField(h1, h2, entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
 
@@ -137,7 +150,7 @@ public final class SaftDiff {
         }
 
         if(modelData.models1.size() != modelData.models2.size()) {
-            return Result.failure(String.format("%ss size mismatch [%s != %s]", "Product", modelData.models1.size(), modelData.models2.size())).asList();
+            return Result.failure(String.format("%ss size mismatch [%s != %s]", modelData.modelName, modelData.models1.size(), modelData.models2.size())).asList();
         }
 
         List<Result> p1diffs = checkModels(modelData, true);
@@ -168,13 +181,13 @@ public final class SaftDiff {
                     E code = modelData.keyGetter.apply(m1);
                     Optional<T> m2 = findModel(modelData.models2, modelData.keyGetter, code);
                     if(!m2.isPresent()) {
-                        return Result.failure(String.format("Product code %s not present on %s file", code, firstPass ? "second" : "first"));
+                        return Result.failure(String.format("%s '%s' not present on %s file", modelData.modelName, code, firstPass ? "second" : "first"));
                     }
 
                     if(firstPass) {
                         List<Result> fieldResults = modelData.modelMethods.entrySet()
                                 .stream()
-                                .map(entry -> checkField(m1, m2.get(), entry.getKey(), entry.getValue()))
+                                .map(entry -> compareField(m1, m2.get(), entry.getKey(), entry.getValue()))
                                 .collect(Collectors.toList());
 
                         return Result.fromResults(fieldResults);
@@ -208,7 +221,7 @@ public final class SaftDiff {
     }
 
     /**
-     * Checks if the same field of two objects have the same value.
+     * Compares that the same field of two objects have the same value.
      * Returns an explanatory result.
      *
      * @param t1 first object
@@ -218,7 +231,7 @@ public final class SaftDiff {
      * @param <T> The parameter of the objects' Type
      * @return the result of the operation
      */
-    private <T> Result checkField(T t1, T t2, String methodName, Function<T, Object> method) {
+    private <T> Result compareField(T t1, T t2, String methodName, Function<T, Object> method) {
         Object v1 = method.apply(t1);
         Object v2 = method.apply(t2);
 
