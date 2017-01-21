@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Calculates the differences between two SAF-T file
+ * Finds differences between two SAF-T files, given as two AuditFile
+ * instances that have all the SAF-T data.
+ *
  */
 public final class SaftDiff {
 
@@ -30,12 +32,29 @@ public final class SaftDiff {
         this.file2 = file2;
     }
 
-    private class ModelData<T, E> {
+    /**
+     * Utility class built to store arguments to pass to private
+     * methods of this class. It holds two collections of a model T,
+     * a map of the model fields to compare, and a lambda to obtain
+     * the key attribute of the model.
+     *
+     * @param <T> The type of the model
+     * @param <E> The type of the model's key
+     */
+    private final class ModelData<T, E> {
         final List<T> models1;
         final List<T> models2;
         final Map<String, Function<T, Object>> modelMethods;
         final Function<T, E> keyGetter;
 
+        /**
+         * Creates a new ModelData
+         *
+         * @param models1 the first batch of data
+         * @param models2 the second batch of data
+         * @param modelMethods the methods that compare two instances
+         * @param keyGetter the method that gets the key value
+         */
         ModelData(List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter) {
             this.models1 = models1;
             this.models2 = models2;
@@ -43,10 +62,24 @@ public final class SaftDiff {
             this.keyGetter = keyGetter;
         }
 
-        public ModelData<T,E> switchModels() {
+        /**
+         * Usually the operations are relative from models1 applied to
+         * models2. This method switches that order.
+         *
+         * @return a new ModelData with collections switched
+         */
+        private ModelData<T,E> switchModels() {
             return new ModelData<>(models2, models1, modelMethods, keyGetter);
         }
 
+        /**
+         * Based on the firstPass boolean, returns the proper ModelData.
+         * If true, returns itself. If false, then switches the model
+         * collections.
+         *
+         * @param firstPass true if it's the first pass of the diff
+         * @return the appropriate ModelData for the given pass
+         */
         public ModelData<T, E> prepareFor(boolean firstPass) {
             if(firstPass) {
                 return this;
@@ -57,7 +90,7 @@ public final class SaftDiff {
     }
 
     /**
-     * Processes the given data and returns a Result
+     * Uses the given AuditFiles to find all the diffs on the data
      *
      * @return the result
      */
@@ -88,9 +121,12 @@ public final class SaftDiff {
     }
 
     /**
-     * Gets the diffs from the Product elements
+     * Gets the diffs from the model elements present on ModelData
      *
-     * @return the result of the diff
+     * @param modelData the model data to operate on
+     * @param <T> the type of the model
+     * @param <E> the type of the model key
+     * @return the list of diff results
      */
     private <T, E> List<Result> modelDiff(ModelData<T, E> modelData) {
         checkNotNull(modelData.models1);
@@ -112,19 +148,17 @@ public final class SaftDiff {
         return p1diffs;
     }
 
+
     /**
-     * Checks that the products on the first collection exist on the
+     * Checks that the models on the first collection exist on the
      * second collection. If checkFields and a match is found, then
      * all the fields will be compared.
      *
-     * @param models1 the first collection of models
-     * @param models2 the second collection of models
-     * @param modelMethods the map of model fields to test
-     * @param keyGetter a function that gets the key of the model
-     * @param verifyFields true of the fields should be verified
-     * @param <T> the model parameter
-     * @param <E> the type of the model key
-     * @return the list of results
+     * @param sourceData the data to operate on
+     * @param firstPass if this is the first or second pass
+     * @param <T> the type of the model
+     * @param <E> the type of the model's key
+     * @return the list of results with the differences
      */
     private <T, E> List<Result> checkModels(ModelData<T, E> sourceData, boolean firstPass) {
         final ModelData<T, E> modelData = sourceData.prepareFor(firstPass);
