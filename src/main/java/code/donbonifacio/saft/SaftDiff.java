@@ -4,6 +4,8 @@ import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.elements.Customer;
 import code.donbonifacio.saft.elements.Header;
 import code.donbonifacio.saft.elements.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Function;
@@ -17,6 +19,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 public final class SaftDiff {
+
+    static final Logger logger = LoggerFactory.getLogger(SaftDiff.class);
 
     private final AuditFile file1;
     private final AuditFile file2;
@@ -98,8 +102,10 @@ public final class SaftDiff {
      * @return the result
      */
     public Result process() {
+        logger.trace("Testing Header...");
         List<Result> results = headerDiff(file1.getHeader(), file2.getHeader());
 
+        logger.trace("Testing products...");
         ModelData<Product, String> productsData = new ModelData<>(
                 "Product",
                 file1.getMasterFiles().getProducts(),
@@ -109,6 +115,7 @@ public final class SaftDiff {
         );
         results.addAll(modelDiff(productsData));
 
+        logger.trace("Testing customers...");
         ModelData<Customer, String> customersData = new ModelData<>(
                 "Customer",
                 file1.getMasterFiles().getCustomers(),
@@ -129,7 +136,7 @@ public final class SaftDiff {
     private List<Result> headerDiff(Header h1, Header h2) {
         return Header.FIELDS.entrySet()
                 .stream()
-                .map(entry -> compareField(h1, h2, entry.getKey(), entry.getValue()))
+                .map(entry -> compareField("Header", "", h1, h2, entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
 
@@ -187,11 +194,13 @@ public final class SaftDiff {
                     if(firstPass) {
                         List<Result> fieldResults = modelData.modelMethods.entrySet()
                                 .stream()
-                                .map(entry -> compareField(m1, m2.get(), entry.getKey(), entry.getValue()))
+                                .map(entry -> compareField(modelData.modelName, code, m1, m2.get(), entry.getKey(), entry.getValue()))
                                 .collect(Collectors.toList());
 
                         return Result.fromResults(fieldResults);
                     }
+
+                    logger.trace("{} '{}' OK", modelData.modelName, code);
 
                     return Result.success();
 
@@ -224,6 +233,8 @@ public final class SaftDiff {
      * Compares that the same field of two objects have the same value.
      * Returns an explanatory result.
      *
+     * @param modelName the name of the model being used
+     * @param key the key of the object
      * @param t1 first object
      * @param t2 second object
      * @param methodName descriptive label
@@ -231,7 +242,7 @@ public final class SaftDiff {
      * @param <T> The parameter of the objects' Type
      * @return the result of the operation
      */
-    private <T> Result compareField(T t1, T t2, String methodName, Function<T, Object> method) {
+    private <T> Result compareField(String modelName, Object key, T t1, T t2, String methodName, Function<T, Object> method) {
         Object v1 = method.apply(t1);
         Object v2 = method.apply(t2);
 
@@ -248,7 +259,7 @@ public final class SaftDiff {
         }
 
         if(!v1.equals(v2)) {
-            return Result.failure(methodName + " mismatch ['" + v1 + "' != '" + v2 +"']");
+            return Result.failure(String.format("%s '%s': %s mismatch ['%s' != '%s']", modelName, key == null ? "" : key, methodName, v1, v2));
         }
 
         return Result.success();

@@ -15,6 +15,15 @@ import java.util.stream.Collectors;
 public class SaftCustomerDiffTest extends SaftDiffTest {
 
     /**
+     * Gets the Class under test
+     *
+     * @return the class under test
+     */
+    @Override protected Class getTestClass() {
+        return Customer.class;
+    }
+
+    /**
      * Given a list of Customer fields, generates tests that create specific
      * AuditFiles for each field and check that if they are different
      * we have an error.

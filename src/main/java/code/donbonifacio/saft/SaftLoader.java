@@ -33,7 +33,7 @@ public final class SaftLoader {
      */
     public static AuditFile loadFromFile(String fileName) throws SaftLoaderException {
         checkNotNull(fileName);
-        logger.debug("Loading AuditFile from {}", fileName);
+        logger.trace("Loading AuditFile from {}", fileName);
 
         try {
             FileInputStream fis = new FileInputStream(fileName);
@@ -53,7 +53,7 @@ public final class SaftLoader {
      */
     public static AuditFile loadFromString(String raw) throws SaftLoaderException {
         checkNotNull(raw);
-        logger.debug("Loading AuditFile from raw String");
+        logger.trace("Loading AuditFile from raw String");
         InputStream stream = new ByteArrayInputStream(raw.getBytes(StandardCharsets.UTF_8));
         return loadFrom(stream);
     }

@@ -42,7 +42,9 @@ public class ResultTest extends TestCase {
         Result r2 = Result.failure("Test2");
         Result r3 = Result.fromResults(Arrays.asList(r1, r2));
 
-        assertEquals("Result{succeeded=false, reason='From list of results', results=[Result{succeeded=false, reason='Test1'}, Result{succeeded=false, reason='Test2'}, ]}", r3.toString());
+        assertEquals("Result succeeded=false, reason='From list of results'\n" +
+                "Test1\n" +
+                "Test2\n", r3.toString());
     }
 
     /**

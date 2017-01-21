@@ -14,3 +14,4 @@ hs_err_pid*
 .idea
 saft-utils.iml
 target
+resources/tests/fh*

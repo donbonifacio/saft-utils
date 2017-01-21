@@ -113,6 +113,15 @@ public class SaftDiffTest extends TestCase {
     }
 
     /**
+     * Gets the Class under test
+     *
+     * @return the class under test
+     */
+    protected Class getTestClass() {
+        return SaftDiff.class;
+    }
+
+    /**
      * Creates a test that verifies that if we have different values on
      * the given field, we have a proper error.
      * @param field the field to consider
@@ -120,6 +129,7 @@ public class SaftDiffTest extends TestCase {
      */
     protected DynamicTest createFieldMismatchTest(String field) {
         String testName = "Test header field " + field;
+        Class testClass = getTestClass();
         try {
             final AuditFile f1 = SaftLoader.loadFromString(singleElement(field, "1"));
             final AuditFile f2 = SaftLoader.loadFromString(singleElement(field, "2"));
@@ -127,10 +137,7 @@ public class SaftDiffTest extends TestCase {
             Executable exec = () -> {
                 Result result = assertDiffFailure(f1, f2);
                 assertTrue("Result should fail", result.isFailed());
-                assertEquals(
-                   field + " mismatch ['1' != '2']",
-                    result.getReason()
-                );
+                assertEquals(String.format("%s '%s': %s mismatch ['%s' != '%s']", testClass.getSimpleName(), "", field, "1", "2"), result.getReason());
             };
 
             return DynamicTest.dynamicTest(testName, exec);

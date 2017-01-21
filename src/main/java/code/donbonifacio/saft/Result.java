@@ -155,22 +155,30 @@ public final class Result {
      */
     @Override
     public String toString() {
+        return summary();
+    }
+
+    /**
+     * Gets a summary of this result. Inner results will be written
+     * line by line.
+     *
+     * @return a string summary of this result
+     */
+    public String summary() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Result{");
+        builder.append("Result ");
         builder.append("succeeded=");
         builder.append(isSucceeded());
         builder.append(", reason='");
         builder.append(getReason());
         builder.append("'");
         if(results != null) {
-            builder.append(", results=[");
+            builder.append("\n");
             for(Result result : results) {
-                builder.append(result.toString());
-                builder.append(", ");
+                builder.append(result.getReason());
+                builder.append("\n");
             }
-            builder.append("]");
         }
-        builder.append("}");
         return builder.toString();
     }
 
