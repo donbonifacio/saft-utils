@@ -33,8 +33,8 @@ public final class SaftDiff {
      *
      */
     public SaftDiff(AuditFile file1, AuditFile file2) {
-        this.file1 = file1;
-        this.file2 = file2;
+        this.file1 = checkNotNull(file1);
+        this.file2 = checkNotNull(file2);
     }
 
     /**
@@ -62,11 +62,11 @@ public final class SaftDiff {
          * @param keyGetter the method that gets the key value
          */
         ModelData(String modelName, List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter) {
-            this.modelName = modelName;
-            this.models1 = models1;
-            this.models2 = models2;
-            this.modelMethods = modelMethods;
-            this.keyGetter = keyGetter;
+            this.modelName = checkNotNull(modelName);
+            this.models1 = checkNotNull(models1);
+            this.models2 = checkNotNull(models2);
+            this.modelMethods = checkNotNull(modelMethods);
+            this.keyGetter = checkNotNull(keyGetter);
         }
 
         /**
@@ -197,10 +197,15 @@ public final class SaftDiff {
                                 .map(entry -> compareField(modelData.modelName, code, m1, m2.get(), entry.getKey(), entry.getValue()))
                                 .collect(Collectors.toList());
 
-                        return Result.fromResults(fieldResults);
-                    }
+                        Result result = Result.fromResults(fieldResults);
+                        if(result.isSucceeded()) {
+                            logger.trace("{} '{}' MATCH", modelData.modelName, code);
+                        } else {
+                            logger.error("{} '{}' MISMATCH - {}", modelData.modelName, code, result);
+                        }
 
-                    logger.trace("{} '{}' OK", modelData.modelName, code);
+                        return result;
+                    }
 
                     return Result.success();
 
