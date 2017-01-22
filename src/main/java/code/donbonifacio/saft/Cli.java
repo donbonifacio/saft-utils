@@ -74,7 +74,7 @@ public final class Cli {
 
         CliArgs args = new CliArgs();
         JCommander commander = new JCommander(args, argv);
-        logger.trace("Input %s", args);
+        logger.trace("Input {}", args);
 
         if(args.help) {
             commander.usage();
@@ -86,7 +86,7 @@ public final class Cli {
                 AuditFile f2 = SaftLoader.loadFromFile(args.file2);
                 SaftDiff diff = new SaftDiff(f1, f2);
                 Result result = diff.process();
-                logger.info("%s", result);
+                logger.info("{}", result);
                 if(result.isFailed()) {
                     System.exit(1);
                 }

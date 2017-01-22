@@ -4,6 +4,7 @@ import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.elements.Customer;
 import code.donbonifacio.saft.elements.Header;
 import code.donbonifacio.saft.elements.Product;
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +64,19 @@ public final class SaftDiff {
          */
         ModelData(String modelName, List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter) {
             this.modelName = checkNotNull(modelName);
-            this.models1 = checkNotNull(models1);
-            this.models2 = checkNotNull(models2);
+
+            List<T> m1 = models1;
+            if(m1 == null) {
+                m1 = ImmutableList.of();
+            }
+            this.models1 = m1;
+
+            List<T> m2 = models2;
+            if(m2 == null) {
+                m2 = ImmutableList.of();
+            }
+            this.models2 = m2;
+
             this.modelMethods = checkNotNull(modelMethods);
             this.keyGetter = checkNotNull(keyGetter);
         }
@@ -197,14 +209,7 @@ public final class SaftDiff {
                                 .map(entry -> compareField(modelData.modelName, code, m1, m2.get(), entry.getKey(), entry.getValue()))
                                 .collect(Collectors.toList());
 
-                        Result result = Result.fromResults(fieldResults);
-                        if(result.isSucceeded()) {
-                            logger.trace("{} '{}' MATCH", modelData.modelName, code);
-                        } else {
-                            logger.error("{} '{}' MISMATCH - {}", modelData.modelName, code, result);
-                        }
-
-                        return result;
+                        return Result.fromResults(fieldResults);
                     }
 
                     return Result.success();
