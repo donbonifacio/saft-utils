@@ -49,6 +49,9 @@ public class MasterFiles {
      * @return the tax table
      */
     public TaxTable getTaxTable() {
+        if(taxTable == null) {
+            taxTable = new TaxTable();
+        }
         return taxTable;
     }
 

@@ -137,7 +137,8 @@ public class SaftDiffTest extends TestCase {
             Executable exec = () -> {
                 Result result = assertDiffFailure(f1, f2);
                 assertTrue("Result should fail", result.isFailed());
-                assertEquals(String.format("%s '%s': %s mismatch ['%s' != '%s']", testClass.getSimpleName(), "", field, "1", "2"), result.getReason());
+                String expected = String.format("^%s '%s': %s mismatch \\['%s(.\\d+)?' != '%s(.\\d+)?'\\]$", testClass.getSimpleName(), "", field, "1", "2");
+                assertTrue(result.getReason().matches(expected));
             };
 
             return DynamicTest.dynamicTest(testName, exec);

@@ -1,9 +1,6 @@
 package code.donbonifacio.saft;
 
-import code.donbonifacio.saft.elements.AuditFile;
-import code.donbonifacio.saft.elements.Customer;
-import code.donbonifacio.saft.elements.Header;
-import code.donbonifacio.saft.elements.Product;
+import code.donbonifacio.saft.elements.*;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,6 +133,16 @@ public final class SaftDiff {
                 Customer::getCustomerId
         );
         results.addAll(modelDiff(customersData));
+
+        logger.trace("Testing tax table...");
+        ModelData<TaxTableEntry, String> taxTableData = new ModelData<>(
+                "TaxTableEntry",
+                file1.getMasterFiles().getTaxTable().getTaxTableEntries(),
+                file2.getMasterFiles().getTaxTable().getTaxTableEntries(),
+                TaxTableEntry.FIELDS,
+                TaxTableEntry::getDescription
+        );
+        results.addAll(modelDiff(taxTableData));
 
         return Result.fromResults(results);
     }

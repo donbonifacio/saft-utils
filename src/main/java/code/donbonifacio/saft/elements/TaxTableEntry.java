@@ -1,7 +1,11 @@
 package code.donbonifacio.saft.elements;
 
+import com.google.common.collect.ImmutableMap;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Represents the `TaxTableEntry` on a standard SAF-T file.
@@ -10,6 +14,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name="TaxEntryTable")
 public final class TaxTableEntry {
+
+    // maps a friendly name to a TaxTableEntry field getter
+    public static final Map<String, Function<TaxTableEntry, Object>> FIELDS =
+            ImmutableMap.<String, Function<TaxTableEntry, Object>>builder()
+                    .put("MasterFiles.TaxTable.TaxTableEntry.TaxType", TaxTableEntry::getTaxType)
+                    .put("MasterFiles.TaxTable.TaxTableEntry.TaxCountryRegion", TaxTableEntry::getTaxCountryRegion)
+                    .put("MasterFiles.TaxTable.TaxTableEntry.TaxCode", TaxTableEntry::getTaxCode)
+                    .put("MasterFiles.TaxTable.TaxTableEntry.TaxPercentage", TaxTableEntry::getTaxPercentage)
+                    .build();
 
     @XmlElement(name="TaxType")
     private String taxType;
