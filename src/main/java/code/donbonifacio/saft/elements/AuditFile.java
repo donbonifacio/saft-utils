@@ -17,6 +17,9 @@ public final class AuditFile {
     @XmlElement(name="MasterFiles")
     private MasterFiles masterFiles;
 
+    @XmlElement(name="SourceDocuments")
+    private SourceDocuments sourceDocuments;
+
     /**
      * Gets the Header information
      * @return Header
@@ -38,5 +41,15 @@ public final class AuditFile {
             masterFiles = new MasterFiles();
         }
         return masterFiles;
+    }
+
+    /**
+     * Gets the SourceDocuments
+     */
+    public SourceDocuments getSourceDocuments() {
+        if(sourceDocuments == null) {
+            sourceDocuments = new SourceDocuments();
+        }
+        return sourceDocuments;
     }
 }

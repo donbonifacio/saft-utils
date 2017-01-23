@@ -144,6 +144,9 @@ public final class SaftDiff {
         );
         results.addAll(modelDiff(taxTableData));
 
+        logger.trace("Testing sales invoices...");
+        results.addAll(salesInvoicesDiff(file1.getSourceDocuments().getSalesInvoices(), file2.getSourceDocuments().getSalesInvoices()));
+
         return Result.fromResults(results);
     }
 
@@ -159,6 +162,19 @@ public final class SaftDiff {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Gets the diffs from the SalesInvoices elements.
+     *
+     * @param s1 one SalesInvoices
+     * @param s2 other SalesInvoices
+     * @return the list of results
+     */
+    private List<Result> salesInvoicesDiff(SalesInvoices s1, SalesInvoices s2) {
+        return SalesInvoices.FIELDS.entrySet()
+                .stream()
+                .map(entry -> compareField("SalesInvoices", "", s1, s2, entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
     /**
      * Gets the diffs from the model elements present on ModelData
      *

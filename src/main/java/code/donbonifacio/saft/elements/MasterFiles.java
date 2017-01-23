@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * Represents the MasterFiles XML element of the SAF-T file.
  */
-public class MasterFiles {
+public final class MasterFiles {
 
     @XmlElements({
             @XmlElement(name = "Product",     type = Product.class),
