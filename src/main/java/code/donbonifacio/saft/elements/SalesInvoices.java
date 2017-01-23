@@ -3,6 +3,8 @@ package code.donbonifacio.saft.elements;
 import com.google.common.collect.ImmutableMap;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -27,6 +29,9 @@ public final class SalesInvoices {
 
     @XmlElement(name="TotalCredit")
     private double totalCredit;
+
+    @XmlElement(name="Invoice")
+    private List<Invoice> invoices;
 
     /**
      * Returns the total number of entries.
@@ -53,5 +58,17 @@ public final class SalesInvoices {
      */
     public double getTotalCredit() {
         return totalCredit;
+    }
+
+    /**
+     * Gets the list of invoices.
+     *
+     * @return the list of invoices
+     */
+    public List<Invoice> getInvoices() {
+        if(invoices == null) {
+            invoices = Collections.<Invoice>emptyList();
+        }
+        return invoices;
     }
 }
