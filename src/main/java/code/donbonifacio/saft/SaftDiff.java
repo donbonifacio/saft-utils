@@ -147,7 +147,7 @@ public final class SaftDiff {
         logger.trace("Testing sales invoices...");
         results.addAll(salesInvoicesDiff(file1.getSourceDocuments().getSalesInvoices(), file2.getSourceDocuments().getSalesInvoices()));
 
-        return Result.fromResults(results);
+        return Result.fromResults(ImmutableList.copyOf(results));
     }
 
     /**

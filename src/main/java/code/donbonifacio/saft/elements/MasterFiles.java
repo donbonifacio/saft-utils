@@ -64,13 +64,11 @@ public final class MasterFiles {
      * @return an immutable list
      */
     private <T> ImmutableList<T> gather(Class klass) {
-        return ImmutableList.copyOf(
-                masterFilesElements
-                        .stream()
-                        .filter(obj -> klass.equals(obj.getClass()))
-                        .map(obj -> (T) obj)
-                        .collect(Collectors.toList())
-        );
+        return masterFilesElements
+                .stream()
+                .filter(obj -> klass.equals(obj.getClass()))
+                .map(obj -> (T) obj)
+                .collect(ImmutableList.toImmutableList());
     }
 
     /**
