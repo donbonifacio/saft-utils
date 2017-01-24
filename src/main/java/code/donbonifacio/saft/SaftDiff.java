@@ -147,6 +147,16 @@ public final class SaftDiff {
         logger.trace("Testing sales invoices...");
         results.addAll(salesInvoicesDiff(file1.getSourceDocuments().getSalesInvoices(), file2.getSourceDocuments().getSalesInvoices()));
 
+        logger.trace("Testing invoices...");
+        ModelData<Invoice, String> invoicesData = new ModelData<>(
+                "Invoice",
+                file1.getSourceDocuments().getSalesInvoices().getInvoices(),
+                file2.getSourceDocuments().getSalesInvoices().getInvoices(),
+                Invoice.FIELDS,
+                Invoice::getInvoiceNo
+        );
+        results.addAll(modelDiff(invoicesData));
+
         return Result.fromResults(ImmutableList.copyOf(results));
     }
 

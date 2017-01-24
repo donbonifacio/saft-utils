@@ -1,9 +1,10 @@
 package code.donbonifacio.saft.elements;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -66,9 +67,23 @@ public final class SalesInvoices {
      * @return the list of invoices
      */
     public List<Invoice> getInvoices() {
-        if(invoices == null) {
-            invoices = Collections.<Invoice>emptyList();
-        }
         return invoices;
+    }
+
+    /**
+     * Called by the deserializer when the object load is complete. Transforms
+     * invoices in an immutable list.
+     *
+     * @param um the Unmarshaller
+     * @param parent the parent object
+     */
+    // Used by the XML unmarshaller
+    @SuppressWarnings("squid:UnusedPrivateMethod")
+    private void afterUnmarshal(Unmarshaller um, Object parent) {
+        if(invoices == null) {
+            invoices = ImmutableList.of();
+        } else {
+            invoices = ImmutableList.copyOf(invoices);
+        }
     }
 }

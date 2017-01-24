@@ -1,6 +1,6 @@
 package code.donbonifacio.saft;
 
-import code.donbonifacio.saft.elements.SalesInvoices;
+import code.donbonifacio.saft.elements.Invoice;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Unit tests for diff on SalesInvoices class
  */
-public final class SaftSalesInvoicesDiffTest extends SaftDiffTest {
+public final class SaftInvoiceDiffTest extends SaftDiffTest {
 
     /**
      * Gets the Class under test
@@ -19,11 +19,11 @@ public final class SaftSalesInvoicesDiffTest extends SaftDiffTest {
      */
     @Override
     protected Class getTestClass() {
-        return SalesInvoices.class;
+        return Invoice.class;
     }
 
     /**
-     * Given a list of SalesInvoices fields, generates tests that create specific
+     * Given a list of Invoice fields, generates tests that create specific
      * AuditFiles for each field and check that if they are different
      * we have an error.
      *
@@ -31,7 +31,7 @@ public final class SaftSalesInvoicesDiffTest extends SaftDiffTest {
      */
     @TestFactory
     public List<DynamicTest> generateMismatchTests() {
-        return SalesInvoices.FIELDS
+        return Invoice.FIELDS
                 .entrySet()
                 .stream()
                 .map(entry -> entry.getKey())
