@@ -40,7 +40,7 @@ public final class Invoice {
     private String invoiceDate;
 
     @XmlElement(name="InvoiceType")
-    private String invoiceType;
+    private InvoiceType invoiceType;
 
     @XmlElement(name="SourceID")
     private String sourceId;
@@ -101,7 +101,7 @@ public final class Invoice {
      *
      * @return the invoice type
      */
-    public String getInvoiceType() {
+    public InvoiceType getInvoiceType() {
         return invoiceType;
     }
 

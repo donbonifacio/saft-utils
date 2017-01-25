@@ -11,8 +11,33 @@ public enum InvoiceType {
     FT,
 
     /**
+     * Simplified Invoice
+     */
+    FS,
+
+    /**
+     * Money sale
+     */
+    VD,
+
+    /**
+     * Devolution receipt
+     */
+    TD,
+
+    /**
      * InvoiceReceipt
      */
-    FR
+    FR,
+
+    /**
+     * Credit Note
+     */
+    NC,
+
+    /**
+     * Debit Note
+     */
+    ND
 
 }

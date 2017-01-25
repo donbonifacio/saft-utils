@@ -175,7 +175,11 @@ public final class Result {
         if(results != null) {
             builder.append("\n");
             for(Result result : results) {
-                builder.append(result.getReason());
+                if(result.results == null) {
+                    builder.append(result.getReason());
+                } else {
+                    builder.append(result.summary());
+                }
                 builder.append("\n");
             }
         }

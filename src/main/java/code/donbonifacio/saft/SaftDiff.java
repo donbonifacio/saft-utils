@@ -228,7 +228,7 @@ public final class SaftDiff {
     private <T, E> List<Result> checkModels(ModelData<T, E> sourceData, boolean firstPass) {
         final ModelData<T, E> modelData = sourceData.prepareFor(firstPass);
 
-        return modelData.models1.stream()
+        return modelData.models1.parallelStream()//.stream()
                 .map(m1 -> {
                     E code = modelData.keyGetter.apply(m1);
                     Optional<T> m2 = findModel(modelData.models2, modelData.keyGetter, code);

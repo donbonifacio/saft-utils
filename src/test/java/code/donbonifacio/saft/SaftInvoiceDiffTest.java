@@ -1,10 +1,13 @@
 package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.Invoice;
+import code.donbonifacio.saft.elements.InvoiceType;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -20,6 +23,20 @@ public final class SaftInvoiceDiffTest extends SaftDiffTest {
     @Override
     protected Class getTestClass() {
         return Invoice.class;
+    }
+
+    private static final Map<String, TestValues> TEST_VALUES =
+            ImmutableMap.<String, TestValues>builder()
+                    .put("SourceDocuments.SalesInvoices.Invoice.InvoiceType", new TestValues(InvoiceType.FR, InvoiceType.FT))
+                    .build();
+
+    @Override
+    protected TestValues getTestValues(String field) {
+        TestValues values = TEST_VALUES.get(field);
+        if(values != null) {
+            return values;
+        }
+        return super.getTestValues(field);
     }
 
     /**

@@ -2,13 +2,12 @@ package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.AuditFile;
 import code.donbonifacio.saft.exceptions.SaftLoaderException;
+import junit.framework.Test;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Executable;
-import org.junit.jupiter.api.TestFactory;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -122,6 +121,31 @@ public class SaftDiffTest extends TestCase {
     }
 
     /**
+     * Represents a pair of test values to apply to saft failure diffs.
+     */
+    protected static class TestValues {
+        final Object value1;
+        final Object value2;
+        final static TestValues DEFAULT = new TestValues("1", "2");
+
+        TestValues(Object v1, Object v2) {
+            this.value1 = v1;
+            this.value2 = v2;
+        }
+    }
+
+    /**
+     * Given a field name, returns a pair with test values. The key is
+     * one field value and the value is the other. Should be different.
+     *
+     * @param field the field name
+     * @return a pair with test values
+     */
+    protected TestValues getTestValues(String field) {
+        return TestValues.DEFAULT;
+    }
+
+    /**
      * Creates a test that verifies that if we have different values on
      * the given field, we have a proper error.
      * @param field the field to consider
@@ -131,13 +155,16 @@ public class SaftDiffTest extends TestCase {
         String testName = "Test header field " + field;
         Class testClass = getTestClass();
         try {
-            final AuditFile f1 = SaftLoader.loadFromString(singleElement(field, "1"));
-            final AuditFile f2 = SaftLoader.loadFromString(singleElement(field, "2"));
+            final TestValues testValues = getTestValues(field);
+            final Object value1 = testValues.value1;
+            final Object value2 = testValues.value2;
+            final AuditFile f1 = SaftLoader.loadFromString(singleElement(field, value1));
+            final AuditFile f2 = SaftLoader.loadFromString(singleElement(field, value2));
 
             Executable exec = () -> {
                 Result result = assertDiffFailure(f1, f2);
                 assertTrue("Result should fail", result.isFailed());
-                String expected = String.format("^%s '%s': %s mismatch \\['%s(.\\d+)?' != '%s(.\\d+)?'\\]$", testClass.getSimpleName(), "", field, "1", "2");
+                String expected = String.format("^%s '%s': %s mismatch \\['%s(.\\d+)?' != '%s(.\\d+)?'\\]$", testClass.getSimpleName(), "", field, value1, value2);
                 assertTrue(result.getReason().matches(expected));
             };
 
