@@ -2,6 +2,7 @@ package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.*;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,7 @@ public final class SaftDiff {
         final List<T> models1;
         final List<T> models2;
         final Map<String, Function<T, Object>> modelMethods;
+        final Map<E, List<T>> models2Cache;
         final Function<T, E> keyGetter;
 
         /**
@@ -76,6 +78,11 @@ public final class SaftDiff {
 
             this.modelMethods = checkNotNull(modelMethods);
             this.keyGetter = checkNotNull(keyGetter);
+
+            this.models2Cache = ImmutableMap.copyOf(
+                    this.models2.stream()
+                    .filter(model -> keyGetter.apply(model) != null)
+                    .collect(Collectors.groupingBy(keyGetter)));
         }
 
         /**
@@ -231,7 +238,7 @@ public final class SaftDiff {
         return modelData.models1.parallelStream()//.stream()
                 .map(m1 -> {
                     E code = modelData.keyGetter.apply(m1);
-                    Optional<T> m2 = findModel(modelData.models2, modelData.keyGetter, code);
+                    Optional<T> m2 = findModel(modelData, code);
                     if(!m2.isPresent()) {
                         return Result.failure(String.format("%s '%s' not present on %s file", modelData.modelName, code, firstPass ? "second" : "first"));
                     }
@@ -251,25 +258,30 @@ public final class SaftDiff {
     }
 
     /**
-     * Finds a model by a key on a collection of models
+     * Finds a model by a key on a collection of models. It depends on the
+     * models2Cache of ModelData, a map with key -> model. If the code to
+     * be found is null, it's a specific scenario and it tried to find
+     * a match with a null key (this happens in tests).
      *
-     * @param models the collection of models
-     * @param keyGetter the function that obtains the key value
+     * @param modelData the models data to search on
      * @param code the key code to search for
      * @param <T> the model type
      * @param <E> the type of the key
      * @return an option model
      */
-    private <T, E> Optional<T> findModel(List<T> models, Function<T, E> keyGetter, E code) {
-        if(models == null) {
+    private <T, E> Optional<T> findModel(ModelData modelData, E code) {
+        if(code == null) {
+            return modelData.models2.stream()
+                    .filter(model -> modelData.keyGetter.apply(model) == null)
+                    .findAny();
+        }
+
+        List<T> lucky = (List<T>) modelData.models2Cache.get(code);
+        if(lucky == null || lucky.isEmpty()) {
             return Optional.empty();
         }
-        return models.stream()
-                .filter(model -> {
-                    E key = keyGetter.apply(model);
-                    return key == code || key.equals(code);
-                })
-                .findAny();
+
+        return Optional.of(lucky.get(0));
     }
 
     /**
