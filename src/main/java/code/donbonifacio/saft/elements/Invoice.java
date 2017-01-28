@@ -28,6 +28,9 @@ public final class Invoice {
                     .put("SourceDocuments.SalesInvoices.Invoice.DocumentStatus.InvoiceStatusDate", compose(Invoice::getDocumentStatus, DocumentStatus::getInvoiceStatusDate))
                     .put("SourceDocuments.SalesInvoices.Invoice.DocumentStatus.SourceID", compose(Invoice::getDocumentStatus, DocumentStatus::getSourceId))
                     .put("SourceDocuments.SalesInvoices.Invoice.DocumentStatus.SourceBilling", compose(Invoice::getDocumentStatus, DocumentStatus::getSourceBilling))
+                    .put("SourceDocuments.SalesInvoices.Invoice.SpecialRegimes.SelfBillingIndicator", compose(Invoice::getSpecialRegimes, SpecialRegimes::getSelfBillingIndicator))
+                    .put("SourceDocuments.SalesInvoices.Invoice.SpecialRegimes.CashVATSchemeIndicator", compose(Invoice::getSpecialRegimes, SpecialRegimes::getCashVatSchemeIndicator))
+                    .put("SourceDocuments.SalesInvoices.Invoice.SpecialRegimes.ThirdPartiesBillingIndicator", compose(Invoice::getSpecialRegimes, SpecialRegimes::getThirdPartiesBillingIndicator))
                     .build();
 
     @XmlElement(name="InvoiceNo")
@@ -51,6 +54,9 @@ public final class Invoice {
     @XmlElement(name="InvoiceType")
     private InvoiceType invoiceType;
 
+    @XmlElement(name="SpecialRegimes")
+    private SpecialRegimes specialRegimes;
+
     @XmlElement(name="SourceID")
     private String sourceId;
 
@@ -67,6 +73,18 @@ public final class Invoice {
      */
     public String getInvoiceNo() {
         return invoiceNo;
+    }
+
+    /**
+     * Gets the SpecialRegimes.
+     *
+     * @return the special regimes
+     */
+    public SpecialRegimes getSpecialRegimes() {
+        if(specialRegimes == null) {
+            specialRegimes = new SpecialRegimes();
+        }
+        return specialRegimes;
     }
 
     /**

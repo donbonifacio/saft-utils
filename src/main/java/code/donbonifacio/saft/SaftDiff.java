@@ -79,6 +79,8 @@ public final class SaftDiff {
             this.modelMethods = checkNotNull(modelMethods);
             this.keyGetter = checkNotNull(keyGetter);
 
+
+
             this.models2Cache = ImmutableMap.copyOf(
                     this.models2.stream()
                     .filter(model -> keyGetter.apply(model) != null)
