@@ -5,9 +5,8 @@ import com.google.common.collect.ImmutableList;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Represents the MasterFiles XML element of the SAF-T file.
@@ -24,6 +23,15 @@ public final class MasterFiles {
     private List<Product> products;
     private List<Customer> customers;
     private TaxTable taxTable;
+
+    /**
+     * Empty ctor. Builds the fields with empty data.
+     */
+    public MasterFiles() {
+        products = ImmutableList.of();
+        customers = ImmutableList.of();
+        taxTable = new TaxTable();
+    }
 
     /**
      * Gets the products defined on this MasterFiles
@@ -49,9 +57,6 @@ public final class MasterFiles {
      * @return the tax table
      */
     public TaxTable getTaxTable() {
-        if(taxTable == null) {
-            taxTable = new TaxTable();
-        }
         return taxTable;
     }
 
@@ -82,28 +87,22 @@ public final class MasterFiles {
     @SuppressWarnings("squid:UnusedPrivateMethod")
     private void afterUnmarshal(Unmarshaller um, Object parent) {
         if(masterFilesElements == null) {
-            masterFilesElements = new ArrayList<>(0);
+            masterFilesElements = ImmutableList.of();
         }
 
-        if (products == null) {
-            products = gather(Product.class);
-        }
+        products = gather(Product.class);
+        customers = gather(Customer.class);
 
-        if (customers == null) {
-            customers = gather(Customer.class);
-        }
+        final Optional<TaxTable> taxes = masterFilesElements
+                .stream()
+                .filter(obj -> TaxTable.class.equals(obj.getClass()))
+                .map(obj-> (TaxTable) obj)
+                .findAny();
 
-        if(taxTable == null) {
-            final List<TaxTable> taxes = masterFilesElements
-                    .stream()
-                    .filter(obj -> TaxTable.class.equals(obj.getClass()))
-                    .map(obj-> (TaxTable) obj)
-                    .collect(Collectors.toList());
-            if(taxes.isEmpty()) {
-                taxTable = new TaxTable();
-            } else {
-                taxTable = taxes.get(0);
-            }
+        if(taxes.isPresent()) {
+            taxTable = taxes.get();
+        } else if(taxTable == null) {
+            taxTable = new TaxTable();
         }
 
         // we don't need this anymore

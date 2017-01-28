@@ -41,7 +41,7 @@ public class SaftDiffTest extends TestCase {
         final SaftDiff diff = new SaftDiff(f1, f2);
         final Result result = diff.process();
 
-        assertTrue("SAF-T diff should have failed", result.isFailed());
+        assertTrue(String.format("SAF-T diff should have failed: %s", result.summary()), result.isFailed());
         return result;
     }
 
@@ -158,12 +158,14 @@ public class SaftDiffTest extends TestCase {
             final TestValues testValues = getTestValues(field);
             final Object value1 = testValues.value1;
             final Object value2 = testValues.value2;
-            final AuditFile f1 = SaftLoader.loadFromString(singleElement(field, value1));
-            final AuditFile f2 = SaftLoader.loadFromString(singleElement(field, value2));
+            final String saft1 = singleElement(field, value1);
+            final String saft2 = singleElement(field, value2);
+            final AuditFile f1 = SaftLoader.loadFromString(saft1);
+            final AuditFile f2 = SaftLoader.loadFromString(saft2);
 
             Executable exec = () -> {
-                Result result = assertDiffFailure(f1, f2);
-                assertTrue("Result should fail", result.isFailed());
+                Result result = new SaftDiff(f1, f2).process();
+                assertTrue(String.format("Result should fail: %s\nsaft1: %s\nsaft2: %s", result.summary(), saft1, saft2), result.isFailed());
                 String expected = String.format("^%s '%s': %s mismatch \\['%s(.\\d+)?' != '%s(.\\d+)?'\\]$", testClass.getSimpleName(), "", field, value1, value2);
                 assertTrue(String.format("%s doesn't match %s", result.summary(), expected ),
                         result.getReason().matches(expected));

@@ -2,6 +2,7 @@ package code.donbonifacio.saft.elements;
 
 import com.google.common.collect.ImmutableMap;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Map;
 import java.util.function.Function;
@@ -81,9 +82,6 @@ public final class Invoice {
      * @return the special regimes
      */
     public SpecialRegimes getSpecialRegimes() {
-        if(specialRegimes == null) {
-            specialRegimes = new SpecialRegimes();
-        }
         return specialRegimes;
     }
 
@@ -165,9 +163,23 @@ public final class Invoice {
      * @return the document status
      */
     public DocumentStatus getDocumentStatus() {
+        return documentStatus;
+    }
+
+    /**
+     * Prepares the object after XML deserialization.
+     *
+     * @param um the Unmarshaller
+     * @param parent the parent object
+     */
+    // Used by the XML unmarshaller
+    @SuppressWarnings("squid:UnusedPrivateMethod")
+    private void afterUnmarshal(Unmarshaller um, Object parent) {
         if(documentStatus == null) {
             documentStatus = new DocumentStatus();
         }
-        return documentStatus;
+        if(specialRegimes == null) {
+            specialRegimes = new SpecialRegimes();
+        }
     }
 }
