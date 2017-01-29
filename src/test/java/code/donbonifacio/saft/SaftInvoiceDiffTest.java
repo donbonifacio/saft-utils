@@ -8,7 +8,6 @@ import org.junit.jupiter.api.TestFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Unit tests for diff on SalesInvoices class
@@ -48,11 +47,18 @@ public final class SaftInvoiceDiffTest extends SaftDiffTest {
      */
     @TestFactory
     public List<DynamicTest> generateMismatchTests() {
-        return Invoice.FIELDS
-                .entrySet()
-                .stream()
-                .map(entry -> entry.getKey())
-                .map(field -> createFieldMismatchTest(field))
-                .collect(Collectors.toList());
+        return generateTestForFields(Invoice.FIELDS, SaftDiffTest::createFieldMismatchTest);
+    }
+
+    /**
+     * Given a list of Invoice fields, generates tests that create specific
+     * AuditFiles for each field and check that if they are equal,
+     * the diff succeeds.
+     *
+     * @return the list of generated tests
+     */
+    @TestFactory
+    public List<DynamicTest> generateMatchTests() {
+        return generateTestForFields(Invoice.FIELDS, SaftDiffTest::createFieldMatchTest);
     }
 }

@@ -1,6 +1,7 @@
 package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.AuditFile;
+import code.donbonifacio.saft.elements.Header;
 import code.donbonifacio.saft.exceptions.SaftLoaderException;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -8,6 +9,10 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Executable;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -152,21 +157,19 @@ public class SaftDiffTest extends TestCase {
      * @return the DynamicTest
      */
     protected DynamicTest createFieldMismatchTest(String field) {
-        String testName = "Test header field " + field;
+        String testName = "Test field mismatch " + field;
         Class testClass = getTestClass();
         try {
             final TestValues testValues = getTestValues(field);
-            final Object value1 = testValues.value1;
-            final Object value2 = testValues.value2;
-            final String saft1 = singleElement(field, value1);
-            final String saft2 = singleElement(field, value2);
+            final String saft1 = singleElement(field, testValues.value1);
+            final String saft2 = singleElement(field, testValues.value2);
             final AuditFile f1 = SaftLoader.loadFromString(saft1);
             final AuditFile f2 = SaftLoader.loadFromString(saft2);
 
             Executable exec = () -> {
                 Result result = new SaftDiff(f1, f2).process();
                 assertTrue(String.format("Result should fail: %s\nsaft1: %s\nsaft2: %s", result.summary(), saft1, saft2), result.isFailed());
-                String expected = String.format("^%s '%s': %s mismatch \\['%s(.\\d+)?' != '%s(.\\d+)?'\\]$", testClass.getSimpleName(), "", field, value1, value2);
+                String expected = String.format("^%s '%s': %s mismatch \\['%s(.\\d+)?' != '%s(.\\d+)?'\\]$", testClass.getSimpleName(), "", field, testValues.value1, testValues.value2);
                 assertTrue(String.format("%s doesn't match %s", result.summary(), expected ),
                         result.getReason().matches(expected));
             };
@@ -179,4 +182,51 @@ public class SaftDiffTest extends TestCase {
         }
     }
 
+    /**
+     * Creates a test that verifies that if we have equal values on
+     * the given field, the diff succeeds.
+     *
+     * @param field the field to consider
+     * @return the DynamicTest
+     */
+    protected DynamicTest createFieldMatchTest(String field) {
+        String testName = "Test field match " + field;
+        Class testClass = getTestClass();
+        try {
+            final TestValues testValues = getTestValues(field);
+            final String saft1 = singleElement(field, testValues.value1);
+            final String saft2 = singleElement(field, testValues.value1);
+            final AuditFile f1 = SaftLoader.loadFromString(saft1);
+            final AuditFile f2 = SaftLoader.loadFromString(saft2);
+
+            Executable exec = () -> {
+                Result result = new SaftDiff(f1, f2).process();
+                assertTrue(String.format("Result should succeeded: %s\nsaft1: %s\nsaft2: %s", result.summary(), saft1, saft2), result.isSucceeded());
+            };
+
+            return DynamicTest.dynamicTest(testName, exec);
+        } catch(SaftLoaderException ex) {
+            return DynamicTest.dynamicTest(testName, () -> {
+                fail(ex.getMessage());
+            });
+        }
+    }
+
+    /**
+     * For each model field given on the first param, generates a test
+     * using the generator on the second param.
+     *
+     * @param fields the fields to consider
+     * @param generator the generator function to apply
+     * @param <T> the model class
+     * @return a list of tests
+     */
+    protected <T> List<DynamicTest> generateTestForFields(Map<String, Function<T, Object>> fields, BiFunction<SaftDiffTest, String, DynamicTest> generator) {
+        return fields
+                .entrySet()
+                .stream()
+                .map(entry -> entry.getKey())
+                .map(field -> generator.apply(this, field))
+                .collect(Collectors.toList());
+    }
 }

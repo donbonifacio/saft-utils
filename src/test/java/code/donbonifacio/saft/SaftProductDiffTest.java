@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Unit tests for diff on the Product class
@@ -32,12 +31,19 @@ public class SaftProductDiffTest extends SaftDiffTest {
      */
     @TestFactory
     public List<DynamicTest> generateMismatchProductTests() {
-        return Product.FIELDS
-                .entrySet()
-                .stream()
-                .map(entry -> entry.getKey())
-                .map(field -> createFieldMismatchTest(field))
-                .collect(Collectors.toList());
+        return generateTestForFields(Product.FIELDS, SaftDiffTest::createFieldMismatchTest);
+    }
+
+    /**
+     * Given a list of Product fields, generates tests that create specific
+     * AuditFiles for each field and check that if they are the same
+     * and that the diff succeedes.
+     *
+     * @return the list of generated tests
+     */
+    @TestFactory
+    public List<DynamicTest> generateMatchProductTests() {
+        return generateTestForFields(Product.FIELDS, SaftDiffTest::createFieldMatchTest);
     }
 
     /**

@@ -31,11 +31,18 @@ public final class SaftSalesInvoicesDiffTest extends SaftDiffTest {
      */
     @TestFactory
     public List<DynamicTest> generateMismatchTests() {
-        return SalesInvoices.FIELDS
-                .entrySet()
-                .stream()
-                .map(entry -> entry.getKey())
-                .map(field -> createFieldMismatchTest(field))
-                .collect(Collectors.toList());
+        return generateTestForFields(SalesInvoices.FIELDS, SaftDiffTest::createFieldMismatchTest);
+    }
+
+    /**
+     * Given a list of SalesInvoices fields, generates tests that create specific
+     * AuditFiles for each field and check that if they are equal the
+     * diff succeeds.
+     *
+     * @return the list of generated tests
+     */
+    @TestFactory
+    public List<DynamicTest> generateMatchTests() {
+        return generateTestForFields(SalesInvoices.FIELDS, SaftDiffTest::createFieldMismatchTest);
     }
 }
