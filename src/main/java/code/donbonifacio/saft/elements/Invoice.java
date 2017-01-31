@@ -1,9 +1,11 @@
 package code.donbonifacio.saft.elements;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -66,6 +68,9 @@ public final class Invoice {
 
     @XmlElement(name="CustomerID")
     private int customerId;
+
+    @XmlElement(name="Line")
+    private List<InvoiceLine> lines;
 
     /**
      * Gets the InvoiceNo.
@@ -167,6 +172,15 @@ public final class Invoice {
     }
 
     /**
+     * Gets the invoice Lines.
+     *
+     * @return the invoice lines
+     */
+    public List<InvoiceLine> getLines() {
+        return lines;
+    }
+
+    /**
      * Prepares the object after XML deserialization.
      *
      * @param um the Unmarshaller
@@ -180,6 +194,11 @@ public final class Invoice {
         }
         if(specialRegimes == null) {
             specialRegimes = new SpecialRegimes();
+        }
+        if(lines == null) {
+            lines = ImmutableList.of();
+        } else {
+            lines = ImmutableList.copyOf(lines);
         }
     }
 }
