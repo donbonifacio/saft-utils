@@ -1,5 +1,6 @@
 package code.donbonifacio.saft.elements;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Optional;
 
@@ -34,6 +35,9 @@ public final class InvoiceLine {
 
     @XmlElement(name="ProductDescription")
     private String productDescription;
+
+    @XmlElement(name="Tax")
+    private Tax tax;
 
     /**
      * Gets the LineNumber.
@@ -114,5 +118,29 @@ public final class InvoiceLine {
      */
     public Optional<Double> getCreditAmount() {
         return creditAmount;
+    }
+
+    /**
+     * Gets the Tax.
+     *
+     * @return the tax
+     */
+    public Tax getTax() {
+        return tax;
+    }
+
+    /**
+     * Prepares the object after XML deserialization.
+     *
+     * @param um the Unmarshaller
+     * @param parent the parent object
+     */
+    // Used by the XML unmarshaller
+    @SuppressWarnings("squid:UnusedPrivateMethod")
+    private void afterUnmarshal(Unmarshaller um, Object parent) {
+        if(tax == null) {
+            tax = new Tax();
+        }
+
     }
 }
