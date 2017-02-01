@@ -16,7 +16,7 @@ import static code.donbonifacio.saft.Util.compose;
  */
 public final class Invoice {
 
-    // maps a friendly name to a TaxTableEntry field getter
+    // maps a friendly name to a Invoice field getter
     public static final Map<String, Function<Invoice, Object>> FIELDS =
             ImmutableMap.<String, Function<Invoice, Object>>builder()
                     .put("SourceDocuments.SalesInvoices.Invoice.Hash", Invoice::getHash)

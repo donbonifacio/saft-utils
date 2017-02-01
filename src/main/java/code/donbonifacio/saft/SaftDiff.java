@@ -53,7 +53,7 @@ public final class SaftDiff {
         final Map<String, Function<T, Object>> modelMethods;
         final Map<E, List<T>> models2Cache;
         final Function<T, E> keyGetter;
-        final Optional<BiFunction<T, T, List<Result>>> customDiffer;
+        final Optional<BiFunction<T, T, Result>> customDiffer;
 
         /**
          * Creates a new ModelData
@@ -64,7 +64,7 @@ public final class SaftDiff {
          * @param keyGetter the method that gets the key value
          * @param customDiffer optional function for extra diff logic
          */
-        ModelData(String modelName, List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter, Optional<BiFunction<T, T, List<Result>>> customDiffer) {
+        ModelData(String modelName, List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter, Optional<BiFunction<T, T, Result>> customDiffer) {
             this.modelName = checkNotNull(modelName);
 
             List<T> m1 = models1;
@@ -169,7 +169,17 @@ public final class SaftDiff {
                 file2.getSourceDocuments().getSalesInvoices().getInvoices(),
                 Invoice.FIELDS,
                 Invoice::getInvoiceNo,
-                Optional.empty()
+                Optional.of((invoice1, invoice2) -> {
+                    ModelData<InvoiceLine, Integer> linesData = new ModelData<>(
+                            "Line",
+                            invoice1.getLines(),
+                            invoice2.getLines(),
+                            InvoiceLine.FIELDS,
+                            InvoiceLine::getLineNumber,
+                            Optional.empty()
+                    );
+                    return Result.fromResults(modelDiff(linesData));
+                })
         );
         results.addAll(modelDiff(invoicesData));
 

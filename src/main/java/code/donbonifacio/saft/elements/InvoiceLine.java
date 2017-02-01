@@ -1,13 +1,23 @@
 package code.donbonifacio.saft.elements;
 
+import com.google.common.collect.ImmutableMap;
+
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Represents a Line element, present on an Invoice of a SAF-T XML file.
  */
 public final class InvoiceLine {
+
+    // maps a friendly name to a InvoiceLine field getter
+    public static final Map<String, Function<InvoiceLine, Object>> FIELDS =
+            ImmutableMap.<String, Function<InvoiceLine, Object>>builder()
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.ProductCode", InvoiceLine::getProductCode)
+                    .build();
 
     @XmlElement(name="LineNumber")
     private int lineNumber;
