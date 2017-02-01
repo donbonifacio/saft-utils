@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,7 @@ public final class SaftDiff {
         final Map<String, Function<T, Object>> modelMethods;
         final Map<E, List<T>> models2Cache;
         final Function<T, E> keyGetter;
+        final Optional<BiFunction<T, T, List<Result>>> customDiffer;
 
         /**
          * Creates a new ModelData
@@ -60,8 +62,9 @@ public final class SaftDiff {
          * @param models2 the second batch of data
          * @param modelMethods the methods that compare two instances
          * @param keyGetter the method that gets the key value
+         * @param customDiffer optional function for extra diff logic
          */
-        ModelData(String modelName, List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter) {
+        ModelData(String modelName, List<T> models1, List<T> models2, Map<String, Function<T, Object>> modelMethods, Function<T, E> keyGetter, Optional<BiFunction<T, T, List<Result>>> customDiffer) {
             this.modelName = checkNotNull(modelName);
 
             List<T> m1 = models1;
@@ -79,12 +82,12 @@ public final class SaftDiff {
             this.modelMethods = checkNotNull(modelMethods);
             this.keyGetter = checkNotNull(keyGetter);
 
-
-
             this.models2Cache = ImmutableMap.copyOf(
                     this.models2.stream()
                     .filter(model -> keyGetter.apply(model) != null)
                     .collect(Collectors.groupingBy(keyGetter)));
+
+            this.customDiffer = Optional.empty();
         }
 
         /**
@@ -94,7 +97,7 @@ public final class SaftDiff {
          * @return a new ModelData with collections switched
          */
         private ModelData<T,E> switchModels() {
-            return new ModelData<>(modelName, models2, models1, modelMethods, keyGetter);
+            return new ModelData<>(modelName, models2, models1, modelMethods, keyGetter, customDiffer);
         }
 
         /**
@@ -129,7 +132,8 @@ public final class SaftDiff {
                 file1.getMasterFiles().getProducts(),
                 file2.getMasterFiles().getProducts(),
                 Product.FIELDS,
-                Product::getProductCode
+                Product::getProductCode,
+                Optional.empty()
         );
         results.addAll(modelDiff(productsData));
 
@@ -139,7 +143,8 @@ public final class SaftDiff {
                 file1.getMasterFiles().getCustomers(),
                 file2.getMasterFiles().getCustomers(),
                 Customer.FIELDS,
-                Customer::getCustomerId
+                Customer::getCustomerId,
+                Optional.empty()
         );
         results.addAll(modelDiff(customersData));
 
@@ -149,7 +154,8 @@ public final class SaftDiff {
                 file1.getMasterFiles().getTaxTable().getTaxTableEntries(),
                 file2.getMasterFiles().getTaxTable().getTaxTableEntries(),
                 TaxTableEntry.FIELDS,
-                TaxTableEntry::getDescription
+                TaxTableEntry::getDescription,
+                Optional.empty()
         );
         results.addAll(modelDiff(taxTableData));
 
@@ -162,7 +168,8 @@ public final class SaftDiff {
                 file1.getSourceDocuments().getSalesInvoices().getInvoices(),
                 file2.getSourceDocuments().getSalesInvoices().getInvoices(),
                 Invoice.FIELDS,
-                Invoice::getInvoiceNo
+                Invoice::getInvoiceNo,
+                Optional.empty()
         );
         results.addAll(modelDiff(invoicesData));
 
