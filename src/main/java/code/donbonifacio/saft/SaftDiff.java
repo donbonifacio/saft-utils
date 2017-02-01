@@ -87,7 +87,7 @@ public final class SaftDiff {
                     .filter(model -> keyGetter.apply(model) != null)
                     .collect(Collectors.groupingBy(keyGetter)));
 
-            this.customDiffer = Optional.empty();
+            this.customDiffer = customDiffer;
         }
 
         /**
@@ -171,7 +171,7 @@ public final class SaftDiff {
                 Invoice::getInvoiceNo,
                 Optional.of((invoice1, invoice2) -> {
                     ModelData<InvoiceLine, Integer> linesData = new ModelData<>(
-                            "Line",
+                            "InvoiceLine",
                             invoice1.getLines(),
                             invoice2.getLines(),
                             InvoiceLine.FIELDS,
@@ -267,6 +267,11 @@ public final class SaftDiff {
                                 .stream()
                                 .map(entry -> compareField(modelData.modelName, code, m1, m2.get(), entry.getKey(), entry.getValue()))
                                 .collect(Collectors.toList());
+
+                        if(modelData.customDiffer.isPresent()) {
+                            Result result = modelData.customDiffer.get().apply(m1, m2.get());
+                            fieldResults.add(result);
+                        }
 
                         return Result.fromResults(fieldResults);
                     }
