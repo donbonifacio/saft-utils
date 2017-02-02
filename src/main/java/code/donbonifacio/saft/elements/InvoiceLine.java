@@ -5,8 +5,9 @@ import com.google.common.collect.ImmutableMap;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
+
+import static code.donbonifacio.saft.Util.compose;
 
 /**
  * Represents a Line element, present on an Invoice of a SAF-T XML file.
@@ -17,6 +18,18 @@ public final class InvoiceLine {
     public static final Map<String, Function<InvoiceLine, Object>> FIELDS =
             ImmutableMap.<String, Function<InvoiceLine, Object>>builder()
                     .put("SourceDocuments.SalesInvoices.Invoice.Line.ProductCode", InvoiceLine::getProductCode)
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.ProductDescription", InvoiceLine::getProductDescription)
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.Quantity", InvoiceLine::getQuantity)
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.UnitOfMeasure", InvoiceLine::getUnitOfMeasure)
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.UnitPrice", InvoiceLine::getUnitPrice)
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.TaxPointDate", InvoiceLine::getTaxPointDate)
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.Description", InvoiceLine::getDescription)
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.CreditAmount", InvoiceLine::getCreditAmount)
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.DebitAmount", InvoiceLine::getDebitAmount)
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.Tax.TaxType", compose(InvoiceLine::getTax, Tax::getTaxType))
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.Tax.TaxCountryRegion", compose(InvoiceLine::getTax, Tax::getTaxCountryRegion))
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.Tax.TaxCode", compose(InvoiceLine::getTax, Tax::getTaxCode))
+                    .put("SourceDocuments.SalesInvoices.Invoice.Line.Tax.TaxPercentage", compose(InvoiceLine::getTax, Tax::getTaxPercentage))
                     .build();
 
     @XmlElement(name="LineNumber")
@@ -41,7 +54,10 @@ public final class InvoiceLine {
     private String description;
 
     @XmlElement(name="CreditAmount")
-    private Optional<Double> creditAmount;
+    private double creditAmount;
+
+    @XmlElement(name="DebitAmount")
+    private double debitAmount;
 
     @XmlElement(name="ProductDescription")
     private String productDescription;
@@ -126,8 +142,17 @@ public final class InvoiceLine {
      *
      * @return the credit amount
      */
-    public Optional<Double> getCreditAmount() {
+    public double getCreditAmount() {
         return creditAmount;
+    }
+
+    /**
+     * Gets the DebitAmout.
+     *
+     * @return the credit amount
+     */
+    public double getDebitAmount() {
+        return debitAmount;
     }
 
     /**
