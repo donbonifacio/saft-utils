@@ -36,25 +36,12 @@ public final class Result {
      * @param succeeded true of false
      * @param reason a label string for the reason
      * @param exception an exception if available
+     * @param results an original source of results
      */
-    private Result(boolean succeeded, String reason, Exception exception) {
+    private Result(boolean succeeded, String reason, Exception exception, List<Result> results) {
         this.succeeded = succeeded;
         this.reason = reason;
         this.exception = exception;
-        this.results = null;
-    }
-
-    /**
-     * Creates a Result
-     *
-     * @param succeeded true of false
-     * @param reason a label string for the reason
-     * @param results an original source of results
-     */
-    private Result(boolean succeeded, String reason, List<Result> results) {
-        this.succeeded = succeeded;
-        this.reason = reason;
-        this.exception = null;
         this.results = results;
     }
 
@@ -85,7 +72,7 @@ public final class Result {
      * @return the result
      */
     public static Result failure(String reason, Exception ex) {
-        return new Result(false, reason, ex);
+        return new Result(false, reason, ex, null);
     }
 
     /**
@@ -118,7 +105,17 @@ public final class Result {
             return failures.get(0);
         }
 
-        return new Result(failures.isEmpty(), "From list of results", failures);
+        return new Result(failures.isEmpty(), "From list of results", null, failures);
+    }
+
+    /**
+     * Returns a new Result, copied from this, but with the given reason.
+     *
+     * @param reason the reason for the result
+     * @return a new Result
+     */
+    public Result setReason(String reason) {
+        return new Result(succeeded, reason, exception, results);
     }
 
     /**

@@ -270,7 +270,8 @@ public final class SaftDiff {
 
                         if(modelData.customDiffer.isPresent()) {
                             Result result = modelData.customDiffer.get().apply(m1, m2.get());
-                            fieldResults.add(result);
+                            String reason = String.format("%s '%s' - %s", modelData.modelName, code, result.getReason());
+                            fieldResults.add(result.setReason(reason));
                         }
 
                         return Result.fromResults(fieldResults);

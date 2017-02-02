@@ -169,7 +169,7 @@ public class SaftDiffTest extends TestCase {
             Executable exec = () -> {
                 Result result = new SaftDiff(f1, f2).process();
                 assertTrue(String.format("Result should fail: %s\nsaft1: %s\nsaft2: %s", result.summary(), saft1, saft2), result.isFailed());
-                String expected = String.format("^%s '(%s|0)': %s mismatch \\['%s(.\\d+)?' != '%s(.\\d+)?'\\]$", testClass.getSimpleName(), "", field, testValues.value1, testValues.value2);
+                String expected = String.format("^(.*)%s '(%s|0)': %s mismatch \\['%s(.\\d+)?' != '%s(.\\d+)?'\\]$", testClass.getSimpleName(), "", field, testValues.value1, testValues.value2);
                 assertTrue(String.format("%s doesn't match %s", result.summary(), expected ),
                         result.getReason().matches(expected));
             };
