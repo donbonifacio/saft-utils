@@ -187,8 +187,7 @@ public final class SaftDiff {
         logger.trace("Testing payments...");
         results.addAll(salesInvoicesDiff(file1.getSourceDocuments().getSalesInvoices(), file2.getSourceDocuments().getSalesInvoices()));
 
-        /*
-        ModelData<Invoice, String> paymentsData = new ModelData<>(
+        ModelData<Payment, String> paymentsData = new ModelData<>(
                 "Payment",
                 file1.getSourceDocuments().getPayments().getPayments(),
                 file2.getSourceDocuments().getPayments().getPayments(),
@@ -207,7 +206,6 @@ public final class SaftDiff {
                 })
         );
         results.addAll(modelDiff(paymentsData));
-        */
 
 
         return Result.fromResults(ImmutableList.copyOf(results));
