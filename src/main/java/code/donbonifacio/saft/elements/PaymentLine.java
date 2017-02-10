@@ -18,6 +18,9 @@ public final class PaymentLine {
     public static final Map<String, Function<PaymentLine, Object>> FIELDS =
             ImmutableMap.<String, Function<PaymentLine, Object>>builder()
                     .put("SourceDocuments.Payments.Payment.Line.CreditAmount", PaymentLine::getCreditAmount)
+                    .put("SourceDocuments.Payments.Payment.Line.DebitAmount", PaymentLine::getCreditAmount)
+                    .put("SourceDocuments.Payments.Payment.Line.SourceDocumentID.OriginatingON", compose(PaymentLine::getSourceDocumentId, SourceDocumentID::getOriginatingOn))
+                    .put("SourceDocuments.Payments.Payment.Line.SourceDocumentID.InvoiceDate", compose(PaymentLine::getSourceDocumentId, SourceDocumentID::getInvoiceDate))
                     .build();
 
     @XmlElement(name="LineNumber")
@@ -28,6 +31,18 @@ public final class PaymentLine {
 
     @XmlElement(name="DebitAmount")
     private double debitAmount;
+
+    @XmlElement(name="SourceDocumentID")
+    private SourceDocumentID sourceDocumentId;
+
+    /**
+     * Gets the SourceDocumentID.
+     *
+     * @return the source document id
+     */
+    public SourceDocumentID getSourceDocumentId() {
+        return sourceDocumentId;
+    }
 
     /**
      * Gets the LineNumber.
@@ -65,6 +80,9 @@ public final class PaymentLine {
     // Used by the XML unmarshaller
     @SuppressWarnings("squid:UnusedPrivateMethod")
     private void afterUnmarshal(Unmarshaller um, Object parent) {
+        if(sourceDocumentId == null) {
+            sourceDocumentId = new SourceDocumentID();
+        }
     }
 
 }

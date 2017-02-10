@@ -32,7 +32,7 @@ public final class Payments {
     private double totalCredit;
 
     @XmlElement(name="Payment")
-    private List<Payment> payments;
+    private List<Payment> paymentDocuments;
 
     /**
      * Returns the total number of entries.
@@ -67,7 +67,7 @@ public final class Payments {
      * @return the list of invoices
      */
     public List<Payment> getPayments() {
-        return payments;
+        return paymentDocuments;
     }
 
     /**
@@ -80,10 +80,10 @@ public final class Payments {
     // Used by the XML unmarshaller
     @SuppressWarnings("squid:UnusedPrivateMethod")
     private void afterUnmarshal(Unmarshaller um, Object parent) {
-        if(payments == null) {
-            payments = ImmutableList.of();
+        if(paymentDocuments == null) {
+            paymentDocuments = ImmutableList.of();
         } else {
-            payments = ImmutableList.copyOf(payments);
+            paymentDocuments = ImmutableList.copyOf(paymentDocuments);
         }
     }
 }
