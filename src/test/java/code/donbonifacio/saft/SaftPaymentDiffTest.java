@@ -1,8 +1,8 @@
 package code.donbonifacio.saft;
 
-import code.donbonifacio.saft.elements.Invoice;
-import code.donbonifacio.saft.elements.InvoiceType;
 import code.donbonifacio.saft.elements.Payment;
+import code.donbonifacio.saft.elements.PaymentMechanism;
+import code.donbonifacio.saft.elements.PaymentType;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -27,7 +27,8 @@ public final class SaftPaymentDiffTest extends SaftDiffTest {
 
     private static final Map<String, TestValues> TEST_VALUES =
             ImmutableMap.<String, TestValues>builder()
-                    //.put("SourceDocuments.SalesInvoices.Invoice.InvoiceType", new TestValues(InvoiceType.FR, InvoiceType.FT))
+                    .put("SourceDocuments.Payments.Payment.PaymentType", new TestValues(PaymentType.RG, PaymentType.RC))
+                    .put("SourceDocuments.Payments.Payment.PaymentMethod.PaymentMechanism", new TestValues(PaymentMechanism.CC, PaymentMechanism.MB))
                     .build();
 
     @Override

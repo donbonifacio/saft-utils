@@ -34,6 +34,9 @@ public final class Invoice {
                     .put("SourceDocuments.SalesInvoices.Invoice.SpecialRegimes.SelfBillingIndicator", compose(Invoice::getSpecialRegimes, SpecialRegimes::getSelfBillingIndicator))
                     .put("SourceDocuments.SalesInvoices.Invoice.SpecialRegimes.CashVATSchemeIndicator", compose(Invoice::getSpecialRegimes, SpecialRegimes::getCashVatSchemeIndicator))
                     .put("SourceDocuments.SalesInvoices.Invoice.SpecialRegimes.ThirdPartiesBillingIndicator", compose(Invoice::getSpecialRegimes, SpecialRegimes::getThirdPartiesBillingIndicator))
+                    .put("SourceDocuments.SalesInvoices.Invoice.DocumentTotals.TaxPayable", compose(Invoice::getDocumentTotals, DocumentTotals::getTaxPayable))
+                    .put("SourceDocuments.SalesInvoices.Invoice.DocumentTotals.NetTotal", compose(Invoice::getDocumentTotals, DocumentTotals::getNetTotal))
+                    .put("SourceDocuments.SalesInvoices.Invoice.DocumentTotals.GrossTotal", compose(Invoice::getDocumentTotals, DocumentTotals::getGrossTotal))
                     .build();
 
     @XmlElement(name="InvoiceNo")
@@ -71,6 +74,18 @@ public final class Invoice {
 
     @XmlElement(name="Line")
     private List<InvoiceLine> lines;
+
+    @XmlElement(name="DocumentTotals")
+    private DocumentTotals documentTotals;
+
+    /**
+     * Gets the DocumentTotals.
+     *
+     * @return the document totals
+     */
+    public DocumentTotals getDocumentTotals() {
+        return documentTotals;
+    }
 
     /**
      * Gets the InvoiceNo.
@@ -199,6 +214,9 @@ public final class Invoice {
             lines = ImmutableList.of();
         } else {
             lines = ImmutableList.copyOf(lines);
+        }
+        if(documentTotals == null) {
+            documentTotals = new DocumentTotals();
         }
     }
 }

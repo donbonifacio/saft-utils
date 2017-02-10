@@ -1,16 +1,23 @@
 package code.donbonifacio.saft.elements;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 
 /**
  * Class for DocumentStatus XML element
  */
 public final class DocumentStatus {
 
-    @XmlElement(name="InvoiceStatus")
+    @XmlElements({
+            @XmlElement(name="InvoiceStatus"),
+            @XmlElement(name="PaymentStatus"),
+    })
     private String invoiceStatus;
 
-    @XmlElement(name="InvoiceStatusDate")
+    @XmlElements({
+            @XmlElement(name="InvoiceStatusDate"),
+            @XmlElement(name="PaymentStatusDate")
+    })
     private String invoiceStatusDate;
 
     @XmlElement(name="SourceID")
