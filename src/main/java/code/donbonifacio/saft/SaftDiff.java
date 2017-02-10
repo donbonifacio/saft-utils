@@ -161,7 +161,7 @@ public final class SaftDiff {
         results.addAll(modelDiff(taxTableData));
 
         logger.trace("Testing sales invoices...");
-        results.addAll(salesInvoicesDiff(file1.getSourceDocuments().getSalesInvoices(), file2.getSourceDocuments().getSalesInvoices()));
+        results.addAll(paymentsDiff(file1.getSourceDocuments().getPayments(), file2.getSourceDocuments().getPayments()));
 
         logger.trace("Testing invoices...");
         ModelData<Invoice, String> invoicesData = new ModelData<>(
@@ -183,6 +183,32 @@ public final class SaftDiff {
                 })
         );
         results.addAll(modelDiff(invoicesData));
+
+        logger.trace("Testing payments...");
+        results.addAll(salesInvoicesDiff(file1.getSourceDocuments().getSalesInvoices(), file2.getSourceDocuments().getSalesInvoices()));
+
+        /*
+        ModelData<Invoice, String> paymentsData = new ModelData<>(
+                "Payment",
+                file1.getSourceDocuments().getPayments().getPayments(),
+                file2.getSourceDocuments().getPayments().getPayments(),
+                Payment.FIELDS,
+                Payment::getPaymentRefNo,
+                Optional.of((payment1, payment2) -> {
+                    ModelData<PaymentLine, Integer> linesData = new ModelData<>(
+                            "PaymentLine",
+                            payment1.getLines(),
+                            payment2.getLines(),
+                            PaymentLine.FIELDS,
+                            PaymentLine::getLineNumber,
+                            Optional.empty()
+                    );
+                    return Result.fromResults(modelDiff(linesData));
+                })
+        );
+        results.addAll(modelDiff(paymentsData));
+        */
+
 
         return Result.fromResults(ImmutableList.copyOf(results));
     }
@@ -212,6 +238,21 @@ public final class SaftDiff {
                 .map(entry -> compareField("SalesInvoices", "", s1, s2, entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Gets the diffs from the Payments elements.
+     *
+     * @param p1 one Payments
+     * @param p2 other Payments
+     * @return the list of results
+     */
+    private List<Result> paymentsDiff(final Payments p1, final Payments p2) {
+        return Payments.FIELDS.entrySet()
+                .stream()
+                .map(entry -> compareField("Payments", "", p1, p2, entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
     /**
      * Gets the diffs from the model elements present on ModelData
      *

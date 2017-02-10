@@ -107,5 +107,43 @@
         </DocumentTotals>
       </Invoice>
     </SalesInvoices>
+    <Payments>
+      <NumberOfEntries>12</NumberOfEntries>
+      <TotalDebit>0.00</TotalDebit>
+      <TotalCredit>1249.17</TotalCredit>
+      <Payment>
+        <PaymentRefNo>RG A/7</PaymentRefNo>
+        <TransactionDate>2016-12-16</TransactionDate>
+        <PaymentType>RG</PaymentType>
+        <SystemID>11032039</SystemID>
+        <DocumentStatus>
+          <PaymentStatus>N</PaymentStatus>
+          <PaymentStatusDate>2016-12-16T15:33:51</PaymentStatusDate>
+          <SourceID>21179</SourceID>
+          <SourcePayment>P</SourcePayment>
+        </DocumentStatus>
+        <PaymentMethod>
+          <PaymentMechanism>TB</PaymentMechanism>
+          <PaymentAmount>1030.0</PaymentAmount>
+          <PaymentDate>2016-12-16</PaymentDate>
+        </PaymentMethod>
+        <SourceID>21179</SourceID>
+        <SystemEntryDate>2016-12-16T15:33:51</SystemEntryDate>
+        <CustomerID>0</CustomerID>
+        <Line>
+          <LineNumber>1</LineNumber>
+          <SourceDocumentID>
+            <OriginatingON>FT PDFservicetestes/7</OriginatingON>
+            <InvoiceDate>2016-12-07</InvoiceDate>
+          </SourceDocumentID>
+          <CreditAmount>837.4</CreditAmount>
+        </Line>
+        <DocumentTotals>
+          <TaxPayable>0.0</TaxPayable>
+          <NetTotal>837.4</NetTotal>
+          <GrossTotal>0.0</GrossTotal>
+        </DocumentTotals>
+      </Payment>
+    </Payments>
   </SourceDocuments>
 </AuditFile>
