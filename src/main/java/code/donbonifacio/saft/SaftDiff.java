@@ -1,6 +1,7 @@
 package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.*;
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
@@ -336,6 +337,13 @@ public final class SaftDiff {
 
         if(v2 == null) {
             v2 = "";
+        }
+
+        if(v1 instanceof String && v2 instanceof String) {
+            // Special care for Strings, because they can have weird
+            // unicode chars that are not easy to compare
+            v1 = CharMatcher.javaLetterOrDigit().retainFrom((String) v1);
+            v2 = CharMatcher.javaLetterOrDigit().retainFrom((String) v2);
         }
 
         if(!v1.equals(v2)) {
