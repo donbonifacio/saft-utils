@@ -303,16 +303,18 @@ public final class SaftDiff {
             return Result.success().asList();
         }
 
+        List<Result> sizeResult = new ArrayList<>();
         if(modelData.models1.size() != modelData.models2.size()) {
-            return Result.failure(String.format("%ss size mismatch [%s != %s]", modelData.modelName, modelData.models1.size(), modelData.models2.size())).asList();
+            sizeResult = Result.failure(String.format("%ss size mismatch [%s != %s]", modelData.modelName, modelData.models1.size(), modelData.models2.size())).asList();
         }
 
         List<Result> p1diffs = checkModels(modelData, true);
         List<Result> p2diffs = checkModels(modelData, false);
 
-        p1diffs.addAll(p2diffs);
+        sizeResult.addAll(p1diffs);
+        sizeResult.addAll(p2diffs);
 
-        return p1diffs;
+        return sizeResult;
     }
 
 

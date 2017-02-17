@@ -69,7 +69,7 @@ public class SaftProductDiffTest extends SaftDiffTest {
 
         Result result = new SaftDiff(emptyProducts, withProducts).process();
         assertFalse(result.isSucceeded());
-        assertEquals("Products size mismatch [0 != 1]", result.getReason());
+        assertTrue(result.summary().contains("Products size mismatch [0 != 1]"));
     }
 
     /**
