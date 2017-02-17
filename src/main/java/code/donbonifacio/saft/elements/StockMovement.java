@@ -14,7 +14,7 @@ import static code.donbonifacio.saft.Util.compose;
 /**
  * Represents the StockMovement XML element of a SAF-T file.
  */
-public final class StockMovement {
+public final class StockMovement extends AbstractDocument {
 
     // maps a friendly name to a StockMovement field getter
     public static final Map<String, Function<StockMovement, Object>> FIELDS =
@@ -23,12 +23,26 @@ public final class StockMovement {
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentStatus.MovementStatusDate", compose(StockMovement::getDocumentStatus, DocumentStatus::getInvoiceStatusDate))
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentStatus.SourceID", compose(StockMovement::getDocumentStatus, DocumentStatus::getSourceId))
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentStatus.SourceBilling", compose(StockMovement::getDocumentStatus, DocumentStatus::getSourceBilling))
+
                     .put("SourceDocuments.MovementOfGoods.StockMovement.Hash", StockMovement::getHash)
                     .put("SourceDocuments.MovementOfGoods.StockMovement.MovementDate", StockMovement::getMovementDate)
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.MovementStartTime", StockMovement::getMovementStartTime)
                     .put("SourceDocuments.MovementOfGoods.StockMovement.MovementType", StockMovement::getMovementType)
                     .put("SourceDocuments.MovementOfGoods.StockMovement.SourceID", StockMovement::getSourceId)
+
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.ShipTo.Address.AddressDetail", compose(StockMovement::getShipTo, ShipInfo::getAddress, Address::getAddressDetail))
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.ShipTo.Address.City", compose(StockMovement::getShipTo, ShipInfo::getAddress, Address::getCity))
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.ShipTo.Address.PostalCode", compose(StockMovement::getShipTo, ShipInfo::getAddress, Address::getPostalCode))
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.ShipTo.Address.Country", compose(StockMovement::getShipTo, ShipInfo::getAddress, Address::getCountry))
+
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.ShipFrom.Address.AddressDetail", compose(StockMovement::getShipFrom, ShipInfo::getAddress, Address::getAddressDetail))
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.ShipFrom.Address.City", compose(StockMovement::getShipFrom, ShipInfo::getAddress, Address::getCity))
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.ShipFrom.Address.PostalCode", compose(StockMovement::getShipFrom, ShipInfo::getAddress, Address::getPostalCode))
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.ShipFrom.Address.Country", compose(StockMovement::getShipFrom, ShipInfo::getAddress, Address::getCountry))
+
                     .put("SourceDocuments.MovementOfGoods.StockMovement.SystemEntryDate", StockMovement::getSystemEntryDate)
                     .put("SourceDocuments.MovementOfGoods.StockMovement.CustomerID", StockMovement::getCustomerId)
+
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentTotals.TaxPayable", compose(StockMovement::getDocumentTotals, DocumentTotals::getTaxPayable))
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentTotals.NetTotal", compose(StockMovement::getDocumentTotals, DocumentTotals::getNetTotal))
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentTotals.GrossTotal", compose(StockMovement::getDocumentTotals, DocumentTotals::getGrossTotal))
@@ -37,23 +51,11 @@ public final class StockMovement {
     @XmlElement(name="DocumentNumber")
     private String documentNumber;
 
-    @XmlElement(name="DocumentStatus")
-    private DocumentStatus documentStatus;
+    @XmlElement(name="ShipTo")
+    private ShipInfo shipTo;
 
-    @XmlElement(name="Hash")
-    private String hash;
-
-    @XmlElement(name="SourceID")
-    private String sourceId;
-
-    @XmlElement(name="SystemEntryDate")
-    private String systemEntryDate;
-
-    @XmlElement(name="CustomerID")
-    private int customerId;
-
-    @XmlElement(name="DocumentTotals")
-    private DocumentTotals documentTotals;
+    @XmlElement(name="ShipFrom")
+    private ShipInfo shipFrom;
 
     @XmlElement(name="Line")
     private List<StockMovementLine> lines;
@@ -63,6 +65,18 @@ public final class StockMovement {
 
     @XmlElement(name="MovementType")
     private MovementType movementType;
+
+    @XmlElement(name="MovementStartTime")
+    private String movementStartTime;
+
+    /**
+     * Gets the MovementStartTime.
+     *
+     * @return the movement start time
+     */
+    public String getMovementStartTime() {
+        return movementStartTime;
+    }
 
     /**
      * Gets the MovementType.
@@ -92,15 +106,6 @@ public final class StockMovement {
     }
 
     /**
-     * Gets the DocumentTotals.
-     *
-     * @return the document totals
-     */
-    public DocumentTotals getDocumentTotals() {
-        return documentTotals;
-    }
-
-    /**
      * Gets the InvoiceNo.
      *
      * @return the invoice number
@@ -110,48 +115,21 @@ public final class StockMovement {
     }
 
     /**
-     * Gets the Hash.
+     * Gets the ShipTo.
      *
-     * @return the hash
+     * @return the ship to info
      */
-    public String getHash() {
-        return hash;
+    public ShipInfo getShipTo() {
+        return shipTo;
     }
 
     /**
-     * Gets the SourceID.
+     * Gets the ShipFrom.
      *
-     * @return the source id
+     * @return the ship from info
      */
-    public String getSourceId() {
-        return sourceId;
-    }
-
-    /**
-     * Gets the SystemEntryDate.
-     *
-     * @return the system entry date
-     */
-    public String getSystemEntryDate() {
-        return systemEntryDate;
-    }
-
-    /**
-     * Gets the CustomerID.
-     *
-     * @return the customer id
-     */
-    public int getCustomerId() {
-        return customerId;
-    }
-
-    /**
-     * Gets the document status
-     *
-     * @return the document status
-     */
-    public DocumentStatus getDocumentStatus() {
-        return documentStatus;
+    public ShipInfo getShipFrom() {
+        return shipFrom;
     }
 
     /**
@@ -173,6 +151,12 @@ public final class StockMovement {
         }
         if(documentTotals == null) {
             documentTotals = new DocumentTotals();
+        }
+        if(shipFrom == null) {
+            shipFrom = new ShipInfo();
+        }
+        if(shipTo == null) {
+            shipTo = new ShipInfo();
         }
     }
 }

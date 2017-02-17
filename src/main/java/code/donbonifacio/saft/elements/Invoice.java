@@ -14,7 +14,7 @@ import static code.donbonifacio.saft.Util.compose;
 /**
  * Represents the Invoice XML element of a SAF-T file.
  */
-public final class Invoice {
+public final class Invoice extends AbstractDocument {
 
     // maps a friendly name to a Invoice field getter
     public static final Map<String, Function<Invoice, Object>> FIELDS =
@@ -42,12 +42,6 @@ public final class Invoice {
     @XmlElement(name="InvoiceNo")
     private String invoiceNo;
 
-    @XmlElement(name="DocumentStatus")
-    private DocumentStatus documentStatus;
-
-    @XmlElement(name="Hash")
-    private String hash;
-
     @XmlElement(name="HashControl")
     private String hashControl;
 
@@ -63,29 +57,8 @@ public final class Invoice {
     @XmlElement(name="SpecialRegimes")
     private SpecialRegimes specialRegimes;
 
-    @XmlElement(name="SourceID")
-    private String sourceId;
-
-    @XmlElement(name="SystemEntryDate")
-    private String systemEntryDate;
-
-    @XmlElement(name="CustomerID")
-    private int customerId;
-
     @XmlElement(name="Line")
     private List<InvoiceLine> lines;
-
-    @XmlElement(name="DocumentTotals")
-    private DocumentTotals documentTotals;
-
-    /**
-     * Gets the DocumentTotals.
-     *
-     * @return the document totals
-     */
-    public DocumentTotals getDocumentTotals() {
-        return documentTotals;
-    }
 
     /**
      * Gets the InvoiceNo.
@@ -103,15 +76,6 @@ public final class Invoice {
      */
     public SpecialRegimes getSpecialRegimes() {
         return specialRegimes;
-    }
-
-    /**
-     * Gets the Hash.
-     *
-     * @return the hash
-     */
-    public String getHash() {
-        return hash;
     }
 
     /**
@@ -148,42 +112,6 @@ public final class Invoice {
      */
     public InvoiceType getInvoiceType() {
         return invoiceType;
-    }
-
-    /**
-     * Gets the SourceID.
-     *
-     * @return the source id
-     */
-    public String getSourceId() {
-        return sourceId;
-    }
-
-    /**
-     * Gets the SystemEntryDate.
-     *
-     * @return the system entry date
-     */
-    public String getSystemEntryDate() {
-        return systemEntryDate;
-    }
-
-    /**
-     * Gets the CustomerID.
-     *
-     * @return the customer id
-     */
-    public int getCustomerId() {
-        return customerId;
-    }
-
-    /**
-     * Gets the document status
-     *
-     * @return the document status
-     */
-    public DocumentStatus getDocumentStatus() {
-        return documentStatus;
     }
 
     /**
