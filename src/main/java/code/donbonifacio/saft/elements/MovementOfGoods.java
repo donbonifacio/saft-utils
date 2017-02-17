@@ -27,11 +27,8 @@ public final class MovementOfGoods {
     @XmlElement(name="TotalQuantityIssued")
     private double totalQuantityIssued;
 
-    /*
     @XmlElement(name="StockMovement")
     private List<StockMovement> stockMovements;
-     */
-
 
     /**
      * Returns the total number of entries.
@@ -55,10 +52,10 @@ public final class MovementOfGoods {
      * Gets the list of invoices.
      *
      * @return the list of invoices
-    public List<Invoice> getInvoices() {
-        return invoices;
-    }
      */
+    public List<StockMovement> getStockMovements() {
+        return stockMovements;
+    }
 
     /**
      * Called by the deserializer when the object load is complete. Transforms
@@ -70,12 +67,10 @@ public final class MovementOfGoods {
     // Used by the XML unmarshaller
     @SuppressWarnings("squid:UnusedPrivateMethod")
     private void afterUnmarshal(Unmarshaller um, Object parent) {
-        /*
-        if(invoices == null) {
-            invoices = ImmutableList.of();
+        if(stockMovements == null) {
+            stockMovements = ImmutableList.of();
         } else {
-            invoices = ImmutableList.copyOf(invoices);
+            stockMovements = ImmutableList.copyOf(stockMovements);
         }
-        */
     }
 }

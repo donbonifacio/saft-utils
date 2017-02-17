@@ -11,12 +11,14 @@ public final class DocumentStatus {
     @XmlElements({
             @XmlElement(name="InvoiceStatus"),
             @XmlElement(name="PaymentStatus"),
+            @XmlElement(name="MovementStatus")
     })
     private String invoiceStatus;
 
     @XmlElements({
             @XmlElement(name="InvoiceStatusDate"),
-            @XmlElement(name="PaymentStatusDate")
+            @XmlElement(name="PaymentStatusDate"),
+            @XmlElement(name="MovementStatusDate")
     })
     private String invoiceStatusDate;
 

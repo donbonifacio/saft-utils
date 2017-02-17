@@ -210,6 +210,26 @@ public final class SaftDiff {
         logger.trace("Testing movement of goods...");
         results.addAll(movementOfGoodsDiff(file1.getSourceDocuments().getMovementOfGoods(), file2.getSourceDocuments().getMovementOfGoods()));
 
+        ModelData<StockMovement, String> movementData = new ModelData<>(
+                "StockMovement",
+                file1.getSourceDocuments().getMovementOfGoods().getStockMovements(),
+                file2.getSourceDocuments().getMovementOfGoods().getStockMovements(),
+                StockMovement.FIELDS,
+                StockMovement::getDocumentNumber,
+                Optional.of((mov1, mov2) -> {
+                    ModelData<StockMovementLine, Integer> linesData = new ModelData<>(
+                            "StockMovementLine",
+                            mov1.getLines(),
+                            mov2.getLines(),
+                            StockMovementLine.FIELDS,
+                            StockMovementLine::getLineNumber,
+                            Optional.empty()
+                    );
+                    return Result.fromResults(modelDiff(linesData));
+                })
+        );
+        results.addAll(modelDiff(movementData));
+
         return Result.fromResults(ImmutableList.copyOf(results));
     }
 
