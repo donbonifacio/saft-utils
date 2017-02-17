@@ -1,6 +1,8 @@
 package code.donbonifacio.saft;
 
 import code.donbonifacio.saft.elements.InvoiceType;
+import code.donbonifacio.saft.elements.MovementOfGoods;
+import code.donbonifacio.saft.elements.MovementType;
 import code.donbonifacio.saft.elements.StockMovement;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.DynamicTest;
@@ -24,10 +26,9 @@ public final class SaftStockMovementDiffTest extends SaftDiffTest {
         return StockMovement.class;
     }
 
-    /*
     private static final Map<String, TestValues> TEST_VALUES =
             ImmutableMap.<String, TestValues>builder()
-                    .put("SourceDocuments.SalesInvoices.Invoice.InvoiceType", new TestValues(InvoiceType.FR, InvoiceType.FT))
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.MovementType", new TestValues(MovementType.GR, MovementType.GT))
                     .build();
 
     @Override
@@ -38,7 +39,6 @@ public final class SaftStockMovementDiffTest extends SaftDiffTest {
         }
         return super.getTestValues(field);
     }
-    */
 
     /**
      * Given a list of StockMovement fields, generates tests that create specific

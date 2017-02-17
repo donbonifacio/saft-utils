@@ -19,11 +19,13 @@ public final class StockMovement {
     // maps a friendly name to a StockMovement field getter
     public static final Map<String, Function<StockMovement, Object>> FIELDS =
             ImmutableMap.<String, Function<StockMovement, Object>>builder()
-                    .put("SourceDocuments.MovementOfGoods.StockMovement.Hash", StockMovement::getHash)
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentStatus.MovementStatus", compose(StockMovement::getDocumentStatus, DocumentStatus::getInvoiceStatus))
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentStatus.MovementStatusDate", compose(StockMovement::getDocumentStatus, DocumentStatus::getInvoiceStatusDate))
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentStatus.SourceID", compose(StockMovement::getDocumentStatus, DocumentStatus::getSourceId))
                     .put("SourceDocuments.MovementOfGoods.StockMovement.DocumentStatus.SourceBilling", compose(StockMovement::getDocumentStatus, DocumentStatus::getSourceBilling))
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.Hash", StockMovement::getHash)
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.MovementDate", StockMovement::getMovementDate)
+                    .put("SourceDocuments.MovementOfGoods.StockMovement.MovementType", StockMovement::getMovementType)
                     .put("SourceDocuments.MovementOfGoods.StockMovement.SourceID", StockMovement::getSourceId)
                     .put("SourceDocuments.MovementOfGoods.StockMovement.SystemEntryDate", StockMovement::getSystemEntryDate)
                     .put("SourceDocuments.MovementOfGoods.StockMovement.CustomerID", StockMovement::getCustomerId)
@@ -55,6 +57,30 @@ public final class StockMovement {
 
     @XmlElement(name="Line")
     private List<StockMovementLine> lines;
+
+    @XmlElement(name="MovementDate")
+    private String movementDate;
+
+    @XmlElement(name="MovementType")
+    private MovementType movementType;
+
+    /**
+     * Gets the MovementType.
+     *
+     * @return the movement type
+     */
+    public MovementType getMovementType() {
+        return movementType;
+    }
+
+    /**
+     * Gets the MovementDate.
+     *
+     * @return the movement date
+     */
+    public String getMovementDate() {
+        return movementDate;
+    }
 
     /**
      * Gets the lines of this StockMovement.
