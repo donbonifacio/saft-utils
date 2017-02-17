@@ -207,6 +207,8 @@ public final class SaftDiff {
         );
         results.addAll(modelDiff(paymentsData));
 
+        logger.trace("Testing movement of goods...");
+        results.addAll(movementOfGoodsDiff(file1.getSourceDocuments().getMovementOfGoods(), file2.getSourceDocuments().getMovementOfGoods()));
 
         return Result.fromResults(ImmutableList.copyOf(results));
     }
@@ -234,6 +236,20 @@ public final class SaftDiff {
         return SalesInvoices.FIELDS.entrySet()
                 .stream()
                 .map(entry -> compareField("SalesInvoices", "", s1, s2, entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the diffs from the MovementOfGoods elements.
+     *
+     * @param s1 one MovementOfGoods
+     * @param s2 other MovementOfGoods
+     * @return the list of results
+     */
+    private List<Result> movementOfGoodsDiff(MovementOfGoods s1, MovementOfGoods s2) {
+        return MovementOfGoods.FIELDS.entrySet()
+                .stream()
+                .map(entry -> compareField("MovementOfGoods", "", s1, s2, entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
 

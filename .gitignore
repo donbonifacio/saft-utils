@@ -15,5 +15,4 @@ hs_err_pid*
 saft-utils.iml
 target
 resources/tests/fh*
-jamores_clj.xml
-jamores_rb.xml
+jamores_*

@@ -145,5 +145,62 @@
         </DocumentTotals>
       </Payment>
     </Payments>
+    <MovementOfGoods>
+      <NumberOfMovementLines>1</NumberOfMovementLines>
+      <TotalQuantityIssued>500.00</TotalQuantityIssued>
+      <StockMovement>
+        <DocumentNumber>GT A/1</DocumentNumber>
+        <DocumentStatus>
+          <MovementStatus>N</MovementStatus>
+          <MovementStatusDate>2017-02-17T10:00:50</MovementStatusDate>
+          <SourceID>21179</SourceID>
+          <SourceBilling>P</SourceBilling>
+        </DocumentStatus>
+        <Hash>CTWTjpDBXJv65repqaXQYn/JCsVkUk7ZKwt/wa/H5XhXymmsDO8Ik+/OAkJJZ5bzX80xQGF4JVl9yu5Gaz8H8dUGZL9zV2yGqPtnzQenP/Ijmd97NwFEikncyE2bKew9KJZeBaZCYbDiBTCJPjlWC5xilaoorSDMTKId5fa1d0g=</Hash>
+        <MovementDate>2017-02-17Z</MovementDate>
+        <MovementType>GT</MovementType>
+        <SystemEntryDate>2017-02-17T10:00:50</SystemEntryDate>
+        <CustomerID>0</CustomerID>
+        <SourceID>21179</SourceID>
+        <ShipTo>
+          <Address>
+            <AddressDetail>Waza</AddressDetail>
+            <City>waza</City>
+            <PostalCode>1224-123</PostalCode>
+            <Country>PT</Country>
+          </Address>
+        </ShipTo>
+        <ShipFrom>
+          <Address>
+            <AddressDetail>Morada 1</AddressDetail>
+            <City>Amadora</City>
+            <PostalCode>2700-801</PostalCode>
+            <Country>PT</Country>
+          </Address>
+        </ShipFrom>
+        <MovementStartTime>2017-02-17T10:04:00</MovementStartTime>
+        <Line>
+          <LineNumber>1</LineNumber>
+          <ProductCode>1400669</ProductCode>
+          <ProductDescription>002</ProductDescription>
+          <Quantity>500.0</Quantity>
+          <UnitOfMeasure>unit</UnitOfMeasure>
+          <UnitPrice>0.055</UnitPrice>
+          <Description>Corte a Laser peça cortiça Refª 002</Description>
+          <CreditAmount>27.5</CreditAmount>
+          <Tax>
+            <TaxType>IVA</TaxType>
+            <TaxCountryRegion>PT</TaxCountryRegion>
+            <TaxCode>NOR</TaxCode>
+            <TaxPercentage>23.0</TaxPercentage>
+          </Tax>
+        </Line>
+        <DocumentTotals>
+          <TaxPayable>6.33</TaxPayable>
+          <NetTotal>27.5</NetTotal>
+          <GrossTotal>33.83</GrossTotal>
+        </DocumentTotals>
+      </StockMovement>
+    </MovementOfGoods>
   </SourceDocuments>
 </AuditFile>

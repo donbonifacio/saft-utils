@@ -13,6 +13,9 @@ public final class SourceDocuments {
     @XmlElement(name="Payments")
     private Payments payments;
 
+    @XmlElement(name="MovementOfGoods")
+    private MovementOfGoods movementOfGoods;
+
     /**
      * Gets the Payments.
      *
@@ -35,6 +38,18 @@ public final class SourceDocuments {
             salesInvoices = new SalesInvoices();
         }
         return salesInvoices;
+    }
+
+    /**
+     * Returns the MovementOfGoods.
+     *
+     * @return the movement of goods.
+     */
+    public MovementOfGoods getMovementOfGoods() {
+        if(movementOfGoods == null) {
+            movementOfGoods = new MovementOfGoods();
+        }
+        return movementOfGoods;
     }
 
 }
